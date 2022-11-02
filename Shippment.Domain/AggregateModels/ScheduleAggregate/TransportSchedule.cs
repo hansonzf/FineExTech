@@ -118,7 +118,12 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
                 Efficiency = Efficiency.Leave();
                 Status = ScheduleStatus.Executed;
 
-                AddDomainEvent(new ScheduleExecutedDomainEvent());
+                AddDomainEvent(new ScheduleExecutedDomainEvent { 
+                    ScheduleId = Id,
+                    OccuredTime = DateTime.Now,
+                    Type = ScheduleType.Transport,
+                    Location = departureLocation
+                });
 
                 return true;
             }

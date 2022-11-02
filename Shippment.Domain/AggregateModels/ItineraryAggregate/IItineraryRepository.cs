@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shippment.Domain.AggregateModels.ItineraryAggregate
 {
-    public interface ItineraryRepository : IRepository<Itinerary>
+    public interface IItineraryRepository : IRepository<Itinerary>
     {
         Task<bool> CreateNewItineraryAsync(Itinerary itinerary);
     }

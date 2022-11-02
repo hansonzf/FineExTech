@@ -8,10 +8,10 @@ namespace Shipment.Api.Application.DomainEventHandlers.CheckedTransportCargo
     public class GenerateItineraryHandler
         : INotificationHandler<CheckedTransportCargoDomainEvent>
     {
-        private readonly ItineraryRepository _repository;
+        private readonly IItineraryRepository _repository;
         private readonly ILogger<GenerateItineraryHandler> _logger;
 
-        public GenerateItineraryHandler(ItineraryRepository repository, ILogger<GenerateItineraryHandler> logger)
+        public GenerateItineraryHandler(IItineraryRepository repository, ILogger<GenerateItineraryHandler> logger)
         {
             _repository = repository;
             _logger = logger;

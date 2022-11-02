@@ -1,13 +1,14 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shippment.Domain.AggregateModels;
+using Shippment.Domain.AggregateModels.LocationAggregate;
 
 namespace Shippment.Domain.Events
 {
-    public class ScheduleExecutedDomainEvent : INotification
+    public record ScheduleExecutedDomainEvent : INotification
     {
+        public long ScheduleId { get; init; }
+        public ScheduleType Type { get; init; }
+        public DateTime OccuredTime { get; init; }
+        public LocationDescription Location { get; init; }
     }
 }
