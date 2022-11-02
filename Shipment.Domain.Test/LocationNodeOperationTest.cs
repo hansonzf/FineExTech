@@ -6,11 +6,11 @@ using Shippment.Domain.AggregateModels.ScheduleAggregate;
 
 namespace Shipment.Domain.Test
 {
-    public class LocationNodeOperationTest : IClassFixture<LocationNodeDataFixture>
+    public class LocationNodeOperationTest : IClassFixture<LocationNodeTestFixture>
     {
         private ITransportScheduleRepository _scheduleRepository;
 
-        public LocationNodeOperationTest(LocationNodeDataFixture fixture)
+        public LocationNodeOperationTest(LocationNodeTestFixture fixture)
         {
             _scheduleRepository = fixture.ScheduleRepository;
         }

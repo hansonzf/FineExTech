@@ -9,13 +9,13 @@ using Shippment.Domain.Events;
 
 namespace Shipment.Domain.Test
 {
-    public class OperationCenterManageScheduleTest : IClassFixture<ScheduleDataFixture>
+    public class OperationCenterManageScheduleTest : IClassFixture<ScheduleTestFixture>
     {
         private IRouteRepository _routeRepository;
         private IEquipmentRepository _equipmentRepository;
         private ITransportScheduleRepository _scheduleRepository;
 
-        public OperationCenterManageScheduleTest(ScheduleDataFixture fixture)
+        public OperationCenterManageScheduleTest(ScheduleTestFixture fixture)
         {
             _routeRepository = fixture.RouteRepository;
             _equipmentRepository = fixture.EquipmentRepository;

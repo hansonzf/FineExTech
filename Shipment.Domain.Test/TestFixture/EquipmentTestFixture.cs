@@ -4,12 +4,12 @@ using Shippment.Domain.AggregateModels.EquipmentAggregate;
 
 namespace Shipment.Domain.Test.TestFixture
 {
-    public class EquipmentTestDataFixture
+    public class EquipmentTestFixture
     {
         private readonly List<Equipment> _equipmentTestData;
         private Mock<IEquipmentRepository> _mockEquipmentRepository;
 
-        public EquipmentTestDataFixture()
+        public EquipmentTestFixture()
         {
             _equipmentTestData = EquipmentProxy.SeedTestData();
             InitMockRepositories();

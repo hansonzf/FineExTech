@@ -6,12 +6,12 @@ using Shippment.Domain.Events;
 
 namespace Shipment.Domain.Test
 {
-    public class OperationCenterManageOrderTest : IClassFixture<TransportOrderTestDataFixture>
+    public class OperationCenterManageOrderTest : IClassFixture<TransportOrderTestFixture>
     {
-        private readonly TransportOrderTestDataFixture _fixture;
+        private readonly TransportOrderTestFixture _fixture;
         private readonly ITransportOrderRepository _transportOrderRepository;
 
-        public OperationCenterManageOrderTest(TransportOrderTestDataFixture fixture)
+        public OperationCenterManageOrderTest(TransportOrderTestFixture fixture)
         {
             _fixture = fixture;
             _transportOrderRepository = fixture.TransportOrderRepository;

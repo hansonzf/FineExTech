@@ -6,12 +6,12 @@ using Shippment.Domain.AggregateModels.TransportOrderAggregate;
 
 namespace Shipment.Domain.Test.TestFixture
 {
-    public class TransportOrderTestDataFixture
+    public class TransportOrderTestFixture
     {
         private readonly List<TransportOrder> _orderTestStore;
         private Mock<ITransportOrderRepository> _mockRepository;
 
-        public TransportOrderTestDataFixture()
+        public TransportOrderTestFixture()
         {
             _orderTestStore = TransportOrderProxy.SeedTestData();
             Initialize();

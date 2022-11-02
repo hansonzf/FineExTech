@@ -7,11 +7,11 @@ using Shippment.Domain.AggregateModels.LocationAggregate;
 
 namespace Shipment.Domain.Test
 {
-    public class LocationNodeManageEquipmentTest : IClassFixture<EquipmentTestDataFixture>
+    public class LocationNodeManageEquipmentTest : IClassFixture<EquipmentTestFixture>
     {
         private readonly IEquipmentRepository _equipmentRepository;
 
-        public LocationNodeManageEquipmentTest(EquipmentTestDataFixture fixture)
+        public LocationNodeManageEquipmentTest(EquipmentTestFixture fixture)
         {
             _equipmentRepository = fixture.EquipmentRepository;
         }
