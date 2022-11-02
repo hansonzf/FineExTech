@@ -31,39 +31,33 @@ namespace Shipment.Domain.Test
         [Fact]
         public async Task Audit_transport_order_without_pickup_service_should_be_accept_status()
         {
-            long scheduleId = 100;
             var orders = await _transportOrderRepository.GetWaitforAuditOrdersAsync();
 
             // in UI, user should select one of wait for audit order, and then make decision
             var order = orders.First();
-            order.Accept(scheduleId);
+            order.Accept();
 
             Assert.Equal(OrderStatus.Accepted, order.Status);
-            Assert.Equal(100, order.ScheduleId);
             Assert.Collection(order.DomainEvents, e => {
                 var evt = e as AcceptTransportOrderDomainEvent;
                 Assert.NotNull(evt);
-                Assert.Equal(scheduleId, evt.ScheduleId);
             });
         }
 
         [Fact]
         public async Task Audit_transport_order_with_pickup_service_should_be_pickup_status()
         {
-            long scheduleId = 100;
             EquipmentDescription pickupEquipment = new EquipmentDescription(1, "鄂A00001", EquipmentType.Vehicle);
             var orders = await _transportOrderRepository.GetWaitforAuditOrdersAsync();
 
             // in UI, user should select one of wait for audit order, and then make decision
             var order = orders.Last();
-            order.Accept(scheduleId, pickupEquipment);
+            order.Accept(pickupEquipment);
 
             Assert.Equal(OrderStatus.Pickup, order.Status);
-            Assert.Equal(100, order.ScheduleId);
             Assert.Collection(order.DomainEvents, e => {
                 var evt = e as AcceptTransportOrderDomainEvent;
                 Assert.NotNull(evt);
-                Assert.Equal(scheduleId, evt.ScheduleId);
             });
         }
         
@@ -98,6 +92,7 @@ namespace Shipment.Domain.Test
 
             Assert.Equal(OrderStatus.Standby, order.Status);
             Assert.Equal(3, order.CargoList.Count);
+            Assert.Contains(order.DomainEvents, e => e is CheckedTransportCargoDomainEvent);
         }
         
         [Fact]

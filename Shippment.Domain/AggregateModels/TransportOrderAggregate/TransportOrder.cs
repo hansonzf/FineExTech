@@ -57,19 +57,17 @@ namespace Shippment.Domain.AggregateModels.TransportOrderAggregate
             OrderTime = DateTime.Now;
         }
 
-        public void Accept(long scheduleId, EquipmentDescription? pickupEquipment = null)
+        public void Accept(EquipmentDescription? pickupEquipment = null)
         {
             if (Status != OrderStatus.Ordered)
                 throw new InvalidOperationException();
 
             Status = PickupCargoInfo.NeedPickupService ? OrderStatus.Pickup : OrderStatus.Accepted;
-            ScheduleId = scheduleId;
             DeliveryCode = new Random(1).Next(0, 9999).ToString("0000");
             AddDomainEvent(new AcceptTransportOrderDomainEvent
             {
                 TransportOrderId = Id,
-                AssignedPickupEquipment = pickupEquipment,
-                ScheduleId = scheduleId
+                AssignedPickupEquipment = pickupEquipment
             });
             // responding this event should do the following things
             //  1, if customer need pickup service, system should
@@ -105,9 +103,11 @@ namespace Shippment.Domain.AggregateModels.TransportOrderAggregate
                 Cargo cargo = item.Value;
                 _cargoList.Add(new TransportCargo(Id, barcode, cargo));
             }
-
             TrackingNumber = $"TRS-{CustomerId}-{DateTime.Now.ToString("yyyyMMddhhmmss")}";
-            Status = OrderStatus.Pickup;
+            Status = OrderStatus.Standby;
+
+            var evt = new CheckedTransportCargoDomainEvent(Id, TrackingNumber, Status);
+            AddDomainEvent(evt);
         }
 
         private bool IsValidBarcode(string barcode)

@@ -1,11 +1,12 @@
 ﻿using MediatR;
+using Shippment.Domain.AggregateModels;
 using Shippment.Domain.AggregateModels.ItineraryAggregate;
 using Shippment.Domain.Events;
 
-namespace Shipment.Api.Application.DomainEventHandlers.AcceptTransportOrder
+namespace Shipment.Api.Application.DomainEventHandlers.CheckedTransportCargo
 {
     public class GenerateItineraryHandler
-        : INotificationHandler<AcceptTransportOrderDomainEvent>
+        : INotificationHandler<CheckedTransportCargoDomainEvent>
     {
         private readonly ItineraryRepository _repository;
         private readonly ILogger<GenerateItineraryHandler> _logger;
@@ -16,10 +17,11 @@ namespace Shipment.Api.Application.DomainEventHandlers.AcceptTransportOrder
             _logger = logger;
         }
 
-        public async Task Handle(AcceptTransportOrderDomainEvent notification, CancellationToken cancellationToken)
+        public async Task Handle(CheckedTransportCargoDomainEvent notification, CancellationToken cancellationToken)
         {
             string trackingNumber = notification.TrackingNumber;
-            long orderId = notification.TransportOrderId;
+            long orderId = notification.OrderId;
+            OrderStatus status = notification.CurrentStatus;
 
             if (string.IsNullOrEmpty(trackingNumber))
             {
@@ -27,12 +29,14 @@ namespace Shipment.Api.Application.DomainEventHandlers.AcceptTransportOrder
                 return;
             }
 
-            var itinerary = new Itinerary(trackingNumber);
-            bool result = await _repository.CreateNewItineraryAsync(itinerary);
-
-            if (!result)
+            if (status == OrderStatus.Standby)
             {
-                _logger.LogError($"The order which tracking number {trackingNumber} generate intinerary occured error!");
+                var itinerary = new Itinerary(trackingNumber);
+                bool result = await _repository.CreateNewItineraryAsync(itinerary);
+                if (!result)
+                {
+                    _logger.LogError($"The order which tracking number {trackingNumber} generate intinerary occured error!");
+                }
             }
         }
     }
