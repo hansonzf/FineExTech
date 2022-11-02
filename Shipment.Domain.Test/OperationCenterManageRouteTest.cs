@@ -141,24 +141,28 @@ namespace Shipment.Domain.Test
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(3)]
+        [InlineData(4)]
         public void Get_specific_index_leg_of_route(int index)
         {
+            string expectRouteName = "武汉 -> 新加坡 国际专线（3）";
             LocationDescription origin = new LocationDescription(1, "武汉");
-            LocationDescription destination = new LocationDescription(2, "上海");
-            LocationDescription step1 = new LocationDescription(3, "合肥");
-            LocationDescription step2 = new LocationDescription(4, "南京");
-            Segment[] segments = new Segment[3]
+            LocationDescription destination = new LocationDescription(2, "新加坡");
+            LocationDescription step1 = new LocationDescription(3, "广州公司");
+            LocationDescription step2 = new LocationDescription(4, "广州港公司");
+            LocationDescription step3 = new LocationDescription(5, "新加坡港口公司");
+            Segment[] segments = new Segment[4]
             {
-                new Segment(origin, step1, 350),
-                new Segment(step1, step2, 350),
-                new Segment(step2, destination, 300)
+                new Segment(origin, step1, 1009),
+                new Segment(step1, step2, 87),
+                new Segment(step2, step3, 2598),
+                new Segment(step3, destination, 26)
             };
 
-            var route = new Route("武汉 -> 上海 专线中转（2）", origin, destination, segments);
+            var route = new Route(expectRouteName, origin, destination, segments);
             Leg actual = route.GetRouteLeg(index);
 
             Assert.NotNull(actual);
-            Assert.Equal("武汉 -> 上海 专线中转（2）", actual.RouteName);
+            Assert.Equal(expectRouteName, actual.RouteName);
             switch (index)
             {
                 case 1:
@@ -171,6 +175,10 @@ namespace Shipment.Domain.Test
                     break;
                 case 3:
                     Assert.Equal(4, actual.From.LocationId);
+                    Assert.Equal(5, actual.To.LocationId);
+                    break;
+                case 4:
+                    Assert.Equal(5, actual.From.LocationId);
                     Assert.Equal(2, actual.To.LocationId);
                     break;
             }
