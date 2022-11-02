@@ -50,7 +50,7 @@ namespace Shipment.Domain.Test
         public async Task Add_Description_for_equipment_should_success()
         {
             LocationDescription expectLocation = new LocationDescription(100, "武汉发网科技");
-            string expectIdentity = "鄂AZ52FM";
+            string expectIdentity = "鄂AFZ52M";
             var expectDescription = new EquipmentDescription(3, expectIdentity, EquipmentType.Vehicle, 0.6, 1);
 
             var equipment = await _equipmentRepository.GetAsync(3);

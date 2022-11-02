@@ -50,7 +50,7 @@ namespace Shipment.Domain.Test.MockAggregate
             var car3 = new EquipmentProxy
             {
                 Id = 3,
-                Identifier = "鄂AZ52FM",
+                Identifier = "鄂AFZ52M",
                 CurrentLocation = new LocationDescription(1, "武汉公司"),
                 IsInuse = false,
                 IsSelfSupport = true,

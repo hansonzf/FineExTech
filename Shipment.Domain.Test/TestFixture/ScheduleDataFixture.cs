@@ -13,24 +13,24 @@ namespace Shipment.Domain.Test.TestFixture
     {
         private readonly List<Route> _routesTestData;
         private readonly List<TransportSchedule> _scheduleTestData;
-        private readonly List<Equipment> _equipmentTestData;
         private readonly List<TransportOrder> _ordersTestData;
         private Mock<IRouteRepository> _mockRouteRepository;
-        private Mock<IEquipmentRepository> _mockEquipmentRepository;
         private Mock<ITransportScheduleRepository> _mockTransportScheduleRepository;
         private Mock<ITransportOrderRepository> _mockOrderRepository;
+
+        private readonly EquipmentTestDataFixture equipmentTestDataFixture;
 
         public ScheduleDataFixture()
         {
             _routesTestData = RouteProxy.SeedTestData();
             _scheduleTestData = ScheduleProxy.SeedTestData();
-            _equipmentTestData = EquipmentProxy.SeedTestData();
             _ordersTestData = TransportOrderProxy.SeedTestData();
 
             FixRouteRepository();
-            FixEquipmentRepository();
             FixTransOrderRepository();
             FixScheduleRepository();
+
+            equipmentTestDataFixture = new EquipmentTestDataFixture();
         }
 
         private void FixRouteRepository()
@@ -40,12 +40,6 @@ namespace Shipment.Domain.Test.TestFixture
                 .ReturnsAsync((long id) => _routesTestData.First(r => r.Id == id));
         }
 
-        private void FixEquipmentRepository()
-        {
-            _mockEquipmentRepository = new Mock<IEquipmentRepository>();
-            //_mockEquipmentRepository.Setup(rp => rp.GetAvailableEquipmentAsync(It.Is<long>(locationId => locationId > 0)))
-            //    .ReturnsAsync((long locationId) => _equipmentTestData.Where(r => r.CurrentLocation.LocationId == locationId));
-        }
 
         private void FixTransOrderRepository()
         {
@@ -74,7 +68,7 @@ namespace Shipment.Domain.Test.TestFixture
 
 
         public IRouteRepository RouteRepository => _mockRouteRepository.Object;
-        public IEquipmentRepository EquipmentRepository => _mockEquipmentRepository.Object;
+        public IEquipmentRepository EquipmentRepository => equipmentTestDataFixture.EquipmentRepository;
         public ITransportScheduleRepository ScheduleRepository => _mockTransportScheduleRepository.Object;
         public ITransportOrderRepository TransportOrderRepository => _mockOrderRepository.Object;
     }

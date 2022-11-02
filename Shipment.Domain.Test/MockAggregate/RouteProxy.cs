@@ -17,6 +17,12 @@ namespace Shipment.Domain.Test.MockAggregate
             LocationDescription hf = new LocationDescription(2, "合肥");
             LocationDescription nj = new LocationDescription(3, "南京");
             LocationDescription sh = new LocationDescription(4, "上海");
+            LocationDescription gz = new LocationDescription(5, "广州");
+            LocationDescription gzg = new LocationDescription(6, "广州港出海口岸分部");
+            LocationDescription singapore_hub = new LocationDescription(7, "新加坡港");
+            LocationDescription singapore = new LocationDescription(8, "新加坡");
+            LocationDescription singapore_proxy = new LocationDescription(9, "新加坡派件代理分部");
+
 
             var route1 = new RouteProxy("武汉 -> 上海 干线直达", wh, sh);
             route1.Id = 1;
@@ -38,6 +44,15 @@ namespace Shipment.Domain.Test.MockAggregate
                 });
             route3.Id = 3;
             store.Add(route3);
+
+            var route4 = new RouteProxy("武汉 -> 新加坡 国际专线（6）", wh, singapore_proxy,
+                new Segment[5] {
+                    new Segment(wh, gz, 1009),
+                    new Segment(gz, gzg, 87),
+                    new Segment(gzg, singapore_hub, 2598),
+                    new Segment(singapore_hub, singapore, 24),
+                    new Segment(singapore, singapore_proxy, 62)
+                });
 
             return store;
         }

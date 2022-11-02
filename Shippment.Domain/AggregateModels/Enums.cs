@@ -40,6 +40,7 @@
         Created,
         Standby,
         Executed,
-        Completed
+        Completed,
+        Cancelled
     }
 }

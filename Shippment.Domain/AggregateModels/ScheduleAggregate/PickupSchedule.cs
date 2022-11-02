@@ -24,7 +24,6 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
         public PickupSchedule(EquipmentDescription equipment, DateTime estimateSetoutTime, LocationDescription from, PickupDescription pickupDescription)
             : this()
         {
-            RouteId = 0;
             PickupInfo = PickupInformation.CopyFrom(pickupDescription);
             ScheduleNumber = DateTime.Now.ToString("yyyyMMddhhmmssffff");
             Equipment = equipment;
@@ -32,17 +31,8 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
             To = new LocationDescription(0, pickupDescription.DetailAddress);
             Efficiency = new TimeManagement(estimateSetoutTime);
             Status = ScheduleStatus.Created;
-            Method = TransportMethod.ByRoad;
 
-            AddDomainEvent(new MakingScheduleDomainEvent(RouteId, Equipment, From, To, Efficiency));
-        }
-
-        public override bool PrepareSchedule()
-        {
-            if (PickupInfo.GeneratePickupCode())
-                return base.PrepareSchedule();
-            else
-                return false;
+            //AddDomainEvent(new MakingScheduleDomainEvent(RouteId, Equipment, From, To, Efficiency));
         }
 
         public override bool Execute(LocationDescription departureLocation)

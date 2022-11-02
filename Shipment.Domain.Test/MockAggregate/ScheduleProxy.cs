@@ -71,12 +71,10 @@ namespace Shipment.Domain.Test.MockAggregate
 
             var dispatching_Standby_Status_Schedule_1 = new PickupSchedule(equipment, setoutTime, orders[5].Goal.Origin, orders[5].PickupCargoInfo);
             dispatching_Standby_Status_Schedule_1.SetProperty(s => s.Id, 9);
-            dispatching_Standby_Status_Schedule_1.PrepareSchedule();
             schedules.Add(dispatching_Standby_Status_Schedule_1);
 
             var dispatching_Standby_Status_Schedule_2 = new PickupSchedule(equipment2, setoutTime, orders[5].Goal.Origin, orders[5].PickupCargoInfo);
             dispatching_Standby_Status_Schedule_2.SetProperty(s => s.Id, 10);
-            dispatching_Standby_Status_Schedule_2.PrepareSchedule();
             schedules.Add(dispatching_Standby_Status_Schedule_2);
 
             return schedules;

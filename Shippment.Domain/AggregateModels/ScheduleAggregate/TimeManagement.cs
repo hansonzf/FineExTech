@@ -21,6 +21,8 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
         public bool IsSetout => FactSetoutTime.HasValue;
         public bool IsArrived => FactArrivedTime.HasValue;
 
+        private TimeManagement() { }
+
         public TimeManagement(DateTime estimateSetoutTime)
         {
             EstimateSetoutTime = estimateSetoutTime;
@@ -32,6 +34,31 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
             FactSetoutTime = factSetoutTime;
             FactArrivedTime = factArrivedTime;
             EstimateTransportInterval = estimateInterval;
+        }
+
+        public TimeManagement Leave()
+        {
+            var tm = new TimeManagement
+            {
+                EstimateSetoutTime = EstimateSetoutTime,
+                EstimateTransportInterval = EstimateTransportInterval,
+                FactSetoutTime = DateTime.Now
+            };
+
+            return tm;
+        }
+
+        public TimeManagement Arrive()
+        {
+            var tm = new TimeManagement
+            {
+                EstimateSetoutTime = EstimateSetoutTime,
+                EstimateTransportInterval = EstimateTransportInterval,
+                FactSetoutTime = FactSetoutTime,
+                FactArrivedTime = DateTime.Now
+            };
+
+            return tm;
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

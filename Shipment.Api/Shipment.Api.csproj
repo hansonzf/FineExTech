@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\DomainEventHandlers\CancelSchedule\" />
     <Folder Include="Application\DomainEventHandlers\ArrivedTransportDestination\" />
     <Folder Include="Application\DomainEventHandlers\CancelTransportOrder\" />
     <Folder Include="Application\DomainEventHandlers\ScheduleSetoutTimeChanged\" />

@@ -1,11 +1,6 @@
 ﻿using Moq;
 using Shipment.Domain.Test.MockAggregate;
 using Shippment.Domain.AggregateModels.EquipmentAggregate;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shipment.Domain.Test.TestFixture
 {

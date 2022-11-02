@@ -1,13 +1,10 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shippment.Domain.AggregateModels.EquipmentAggregate;
 
 namespace Shippment.Domain.Events
 {
-    public class CancelScheduleDomainEvent : INotification
+    public record CancelScheduleDomainEvent : INotification
     {
+        public EquipmentDescription Equipment { get; init; }
     }
 }
