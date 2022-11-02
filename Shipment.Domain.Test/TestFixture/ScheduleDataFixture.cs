@@ -59,8 +59,7 @@ namespace Shipment.Domain.Test.TestFixture
         private void FixScheduleRepository()
         {
             _mockTransportScheduleRepository = new Mock<ITransportScheduleRepository>();
-            _mockTransportScheduleRepository.Setup(
-                rp => rp.GetScheduleByEquipmentAsync(
+            _mockTransportScheduleRepository.Setup(rp => rp.GetScheduleByEquipmentAsync(
                     It.Is<string>(identity => !string.IsNullOrEmpty(identity))))
                 .ReturnsAsync(
                     (string identity) => _scheduleTestData.Where(

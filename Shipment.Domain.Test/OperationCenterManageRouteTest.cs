@@ -1,12 +1,5 @@
-﻿using Shippment.Domain.AggregateModels;
-using Shippment.Domain.AggregateModels.LocationAggregate;
+﻿using Shippment.Domain.AggregateModels.LocationAggregate;
 using Shippment.Domain.AggregateModels.RouterAggregate;
-using Shippment.Domain.AggregateModels.TransportOrderAggregate;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shipment.Domain.Test
 {
@@ -119,6 +112,68 @@ namespace Shipment.Domain.Test
             Assert.Equal(1, route.Origin.LocationId);
             Assert.Equal(2, route.Destination.LocationId);
             Assert.Equal(1000, route.Distance);
+        }
+
+        [Fact]
+        public void Get_outer_boundary_leg_of_route()
+        {
+            LocationDescription origin = new LocationDescription(1, "武汉");
+            LocationDescription destination = new LocationDescription(2, "上海");
+            LocationDescription step1 = new LocationDescription(3, "合肥");
+            LocationDescription step2 = new LocationDescription(4, "南京");
+            Segment[] segments = new Segment[3]
+            {
+                new Segment(origin, step1, 350),
+                new Segment(step1, step2, 350),
+                new Segment(step2, destination, 300)
+            };
+
+            var route = new Route("武汉 -> 上海 专线中转（2）", origin, destination, segments);
+            Leg actual = route.GetRouteLeg(0);
+
+            Assert.NotNull(actual);
+            Assert.Equal("武汉 -> 上海 专线中转（2）", actual.RouteName);
+            Assert.Equal(1, actual.From.LocationId);
+            Assert.Equal(2, actual.To.LocationId);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public void Get_specific_index_leg_of_route(int index)
+        {
+            LocationDescription origin = new LocationDescription(1, "武汉");
+            LocationDescription destination = new LocationDescription(2, "上海");
+            LocationDescription step1 = new LocationDescription(3, "合肥");
+            LocationDescription step2 = new LocationDescription(4, "南京");
+            Segment[] segments = new Segment[3]
+            {
+                new Segment(origin, step1, 350),
+                new Segment(step1, step2, 350),
+                new Segment(step2, destination, 300)
+            };
+
+            var route = new Route("武汉 -> 上海 专线中转（2）", origin, destination, segments);
+            Leg actual = route.GetRouteLeg(index);
+
+            Assert.NotNull(actual);
+            Assert.Equal("武汉 -> 上海 专线中转（2）", actual.RouteName);
+            switch (index)
+            {
+                case 1:
+                    Assert.Equal(1, actual.From.LocationId);
+                    Assert.Equal(3, actual.To.LocationId);
+                    break;
+                case 2:
+                    Assert.Equal(3, actual.From.LocationId);
+                    Assert.Equal(4, actual.To.LocationId);
+                    break;
+                case 3:
+                    Assert.Equal(4, actual.From.LocationId);
+                    Assert.Equal(2, actual.To.LocationId);
+                    break;
+            }
         }
     }
 }
