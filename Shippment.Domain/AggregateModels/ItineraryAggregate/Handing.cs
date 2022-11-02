@@ -5,12 +5,12 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
 {
     public abstract class Handing : Entity
     {
-        protected const int Loading = 1;
-        protected const int Unloading = 2;
-        protected const int Departing = 3;
-        protected const int Arraiving = 4;
-        protected const int Receiving = 5;
-        protected const int Sending = 6;
+        internal const int Loading = 1;
+        internal const int Unloading = 2;
+        internal const int Departing = 31;
+        internal const int Arraiving = 32;
+        internal const int Receiving = 21;
+        internal const int Sending = 22;
             
         protected Handing()
         { }
@@ -23,7 +23,7 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
         public string TrackingNumber { get; protected set; }
         public LocationDescription Location { get; protected set; }
         public DateTime OperationTime { get; protected set; }
-        public string HandingEventName { get; protected set; }
+        public string HandingDescription { get; protected set; }
         public int HandingType { get; protected set; }
 
         public abstract void Process(string trackingNumber);

@@ -14,7 +14,7 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
         {
             TrackingNumber = trackingNumber;
             OperationTime = DateTime.Now;
-            HandingEventName = @$"
+            HandingDescription = @$"
 {OperationTime}
  【{Location.City}】您的货物从已到达 【{Location.LocationName}】
 

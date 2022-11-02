@@ -39,6 +39,25 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
             protected set => _handings = value.ToList();
         }
 
+        public void TrackRoute(List<Leg> legs)
+        {
+            if (legs is null)
+                return;
+
+            if (legs.Count > 1)
+            {
+                var orderedLegs = legs.OrderBy(l => l.LegIndex);
+                foreach (var item in orderedLegs)
+                {
+                    if (_tracker.Last() == item.From)
+                        continue;
+
+                    _tracker.Append(item.From);
+                }
+                _tracker.Add(orderedLegs.Last().To);
+            }
+        }
+
         public bool IsMatchDeliveryGoal(DeliverySpecification goal)
         {
             if (!_tracker.Any())
@@ -55,7 +74,28 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
 
         public void Log(Handing handingEvent)
         {
+            if (handingEvent.HandingType > 30 && !_tracker.Any())
+                return;
+
+            if (handingEvent.HandingType == Handing.Arraiving)
+                CurrentLegIndex = _tracker.IndexOf(handingEvent.Location);
+
             _handings.Add(handingEvent);
+        }
+
+        public string FlushLog()
+        {
+            if (!_handings.Any())
+                return string.Empty;
+
+            StringBuilder sb = new StringBuilder();
+            var orderedHandings = _handings.OrderBy(h => h.OperationTime);
+            foreach (var evt in orderedHandings)
+            {
+                sb.AppendLine(evt.HandingDescription);
+            }
+
+            return sb.ToString();
         }
     }
 }

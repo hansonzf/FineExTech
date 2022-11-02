@@ -30,13 +30,11 @@ namespace Shipment.Domain.Test.TestFixture
         {
             _mockRepository = new Mock<ITransportScheduleRepository>();
 
-            _mockRepository.Setup(rp => rp.GetScheduleByEquipmentAsync(
+            _mockRepository.Setup(rp => rp.GetTransportScheduleByEquipmentAsync(
                     It.Is<string>(identity => !string.IsNullOrEmpty(identity))))
                 .ReturnsAsync(
                     (string identity) => _scheduleTestData.Where(
-                        s => s.Equipment.Identifier == identity &&
-                        s.Status == ScheduleStatus.Executed &&
-                        s.Type == ScheduleType.Pickup).FirstOrDefault());
+                        s => s.Equipment.Identifier == identity && s.Status == ScheduleStatus.Executed).FirstOrDefault());
 
             _mockRepository.Setup
                 (rp => rp.GetAsync(It.Is<long>(id => id > 0 && id <= 10)))

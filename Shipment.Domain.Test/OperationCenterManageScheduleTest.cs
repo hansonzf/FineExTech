@@ -131,35 +131,6 @@ namespace Shipment.Domain.Test
         }
 
         [Fact]
-        public async Task Executing_schedule_from_correct_setout_location_should_success()
-        {
-            LocationDescription expectOrigin = new LocationDescription(1, "武汉");
-            // 该测试数据的始发地是武汉，目的地是上海
-            var schedule = await GenerateScheduleWithStandbyStatus();
-
-            bool result = schedule.Execute(expectOrigin);
-
-            Assert.True(result);
-            Assert.NotNull(schedule.Efficiency.FactSetoutTime);
-            Assert.Equal(ScheduleStatus.Executed, schedule.Status);
-            Assert.Contains(schedule.DomainEvents, e => e is ScheduleExecutedDomainEvent);
-        }
-
-        [Fact]
-        public async Task Executing_schedule_from_wrong_departure_should_failed()
-        {
-            LocationDescription wrongDeparture = new LocationDescription(4, "上海");
-            // 该测试数据的始发地是武汉，目的地是上海
-            var schedule = await GenerateScheduleWithStandbyStatus();
-
-            bool result = schedule.Execute(wrongDeparture);
-
-            Assert.False(result);
-            Assert.Null(schedule.Efficiency.FactSetoutTime);
-            Assert.Equal(ScheduleStatus.Standby, schedule.Status);
-        }
-
-        [Fact]
         public async Task Cancel_unexecuted_schedule_should_success()
         {
             var schedule = await GenerateScheduleWithStandbyStatus();

@@ -11,8 +11,8 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
     {
         Task<TransportSchedule> GetAsync(long id);
         Task<bool> DeleteAsync(long id);
-        Task<TransportSchedule> GetScheduleByEquipmentAsync(string equipmentIdentifier);
-        Task<TransportSchedule> GetScheduleByEquipmentAsync(long equipmentId);
+        Task<TransportSchedule> GetTransportScheduleByEquipmentAsync(string equipmentIdentifier);
+        Task<TransportSchedule> GetTransportScheduleByEquipmentAsync(long equipmentId, long locationId);
         Task<bool> CreateNewScheduleAsync(TransportSchedule schedule);
     }
 }
