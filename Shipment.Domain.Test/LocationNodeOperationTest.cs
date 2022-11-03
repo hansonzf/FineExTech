@@ -1,25 +1,33 @@
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Shipment.Domain.Test.TestFixture;
+using Shippment.Domain;
 using Shippment.Domain.AggregateModels;
 using Shippment.Domain.AggregateModels.EquipmentAggregate;
 using Shippment.Domain.AggregateModels.ItineraryAggregate;
 using Shippment.Domain.AggregateModels.LocationAggregate;
 using Shippment.Domain.AggregateModels.RouterAggregate;
 using Shippment.Domain.AggregateModels.ScheduleAggregate;
+using Shippment.Domain.AggregateModels.TransportOrderAggregate;
 using Shippment.Domain.Events;
+using Xunit.Abstractions;
 
 namespace Shipment.Domain.Test
 {
     public class LocationNodeOperationTest : IClassFixture<LocationNodeTestFixture>
     {
+        private readonly ITestOutputHelper _output;
         private ITransportScheduleRepository _scheduleRepository;
         private IRouteRepository _routeRepository;
         private IEquipmentRepository _equipmentRepository;
+        private LocationNodeTestFixture _fixture;
 
-        public LocationNodeOperationTest(LocationNodeTestFixture fixture)
+        public LocationNodeOperationTest(LocationNodeTestFixture fixture, ITestOutputHelper output)
         {
             _scheduleRepository = fixture.ScheduleRepository;
             _routeRepository = fixture.RouteRepository;
             _equipmentRepository = fixture.EquipmentRepository;
+            _fixture = fixture;
+            _output = output;
         }
 
         private async Task<TransportSchedule> GenerateScheduleWithStandbyStatus()
@@ -101,15 +109,62 @@ namespace Shipment.Domain.Test
             Assert.False(result);
         }
 
-        [Fact]
-        public void Worker_scan_the_tracking_number_and_loading_cargo()
+        private Itinerary GenerateTestItinerary()
         {
-            string trackingNumber = "123456789";
-            LocationDescription location = new LocationDescription(1, "武汉发网一仓", "武汉");
-            
-            var itinarery = new Itinerary(trackingNumber);
-            var handing = new LoadHanding(location);
-            itinarery.Log(handing);
+            string trackingNumber = "TRS-1-00001";
+            var route = GenerateTestRoute();
+            var itinerary = new Itinerary(trackingNumber);
+            itinerary.TrackRoute(route.Legs);
+
+            return itinerary;
+        }
+
+        public Route GenerateTestRoute()
+        {
+            LocationDescription origin = new LocationDescription(1, "发网武汉临空港一仓", "武汉");
+            LocationDescription destination = new LocationDescription(2, "发网总公司", "上海");
+            LocationDescription step1 = new LocationDescription(3, "发网南京中转站", "南京");
+
+            Segment[] segments = new Segment[2]
+            {
+                new Segment(origin, step1, 500),
+                new Segment(step1, destination, 400)
+            };
+
+            return new Route("测试路由", origin, destination, segments);
+        }
+
+        [Fact]
+        public void Worker_scan_tracking_number_and_loading_cargo()
+        {
+            string trackingNumber = "TRS-1-00001";
+            LocationDescription wh = new LocationDescription(1, "发网武汉临空港一仓", "武汉");
+            var itinerary = GenerateTestItinerary();
+
+            var handing = new LoadHanding(wh);
+            handing.Process(trackingNumber);
+            itinerary.Log(handing);
+            _output.WriteLine(itinerary.FlushLog());
+
+            Assert.NotEmpty(itinerary.Handings);
+        }
+
+        [Fact]
+        public void Worker_scan_tracking_number_and_then_depart()
+        {
+            string trackingNumber = "TRS-1-00001";
+            LocationDescription wh = new LocationDescription(1, "发网武汉临空港一仓", "武汉");
+            var itinerary = GenerateTestItinerary();
+
+            var handing1 = new LoadHanding(wh);
+            handing1.Process(trackingNumber);
+            var handing2 = new DepartureHanding(wh);
+            handing2.Process(trackingNumber);
+            itinerary.Log(handing1);
+            itinerary.Log(handing2);
+            _output.WriteLine(itinerary.FlushLog());
+
+            Assert.NotEmpty(itinerary.Handings);
         }
     }
 }

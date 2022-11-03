@@ -21,7 +21,7 @@ namespace Shippment.Domain.AggregateModels.RouterAggregate
             segments = segments ?? new Segment[0];
 
             if (segments.Any() && IsValid(segments))
-                Segments = new ReadOnlyCollection<Segment>(segments);
+                SetSegments(segments);
         }
 
         public string RouteName { get; protected set; }
@@ -40,13 +40,28 @@ namespace Shippment.Domain.AggregateModels.RouterAggregate
             }
             protected set
             {
-                _segments = value.ToArray();
-                foreach (var segment in _segments)
-                {
-                    segment.Bind(Id);
-                }
-                _distance = _segments.Sum(s => s.Distance);
+                _segments = value.OrderBy(s => s.Index).ToArray();
             }
+        }
+
+        public List<Leg> Legs
+        {
+            get
+            {
+                int segmentCount = _segments.Count();
+                return _segments.Select(
+                    s => new Leg(Id, RouteName, segmentCount, Distance, s.Index, s.From, s.To, s.Distance)).ToList();
+            }
+        }
+
+        protected void SetSegments(Segment[] segments)
+        {
+            _segments = new Segment[segments.Length];
+            for (int i = 0; i < segments.Length; i++)
+            {
+                _segments[i] = segments[i].Bind(Id, i);
+            }
+            _distance = _segments.Sum(s => s.Distance);
         }
 
         public bool IsValid(Segment[] segments)
@@ -82,7 +97,7 @@ namespace Shippment.Domain.AggregateModels.RouterAggregate
                     OriginalSegments = _segments,
                     NewSegments = segments,
                 };
-                Segments = new ReadOnlyCollection<Segment>(segments);
+                SetSegments(segments);
                 AddDomainEvent(segmentChangedEvent);
 
                 return true;
@@ -110,8 +125,8 @@ namespace Shippment.Domain.AggregateModels.RouterAggregate
                     OriginalSegments = _segments,
                     NewSegments = copy,
                 };
+                SetSegments(copy);
                 AddDomainEvent(segmentChangedEvent);
-                Segments = new ReadOnlyCollection<Segment>(copy);
 
                 return true;
             }

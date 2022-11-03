@@ -1,17 +1,18 @@
 ﻿using Shipment.Domain.Test.TestFixture;
 using Shippment.Domain.AggregateModels;
+using Shippment.Domain.AggregateModels.ItineraryAggregate;
 using Shippment.Domain.AggregateModels.LocationAggregate;
 using Shippment.Domain.AggregateModels.TransportOrderAggregate;
 using Shippment.Domain.Events;
 
 namespace Shipment.Domain.Test
 {
-    public class CustomerBookingServiceTest : IClassFixture<TransportOrderTestFixture>
+    public class CustomerBookingServiceTest : IClassFixture<CustomerTestFixture>
     {
-        private readonly TransportOrderTestFixture _fixture;
+        private readonly CustomerTestFixture _fixture;
         private readonly ITransportOrderRepository _repository;
 
-        public CustomerBookingServiceTest(TransportOrderTestFixture fixture)
+        public CustomerBookingServiceTest(CustomerTestFixture fixture)
         {
             _fixture = fixture;
             _repository = fixture.TransportOrderRepository;
@@ -132,6 +133,35 @@ namespace Shipment.Domain.Test
 
             Assert.True(actual);
             Assert.Equal(OrderStatus.Draft, order.Status);
+        }
+
+        [Fact]
+        public void Generate_itinerary_with_tracking_number_should_success()
+        {
+            string trackingNumber = "TRS-1-00001";
+
+            var itinerary = new Itinerary(trackingNumber);
+
+            Assert.NotNull(itinerary);
+            Assert.Equal(trackingNumber, itinerary.TrackingNumber);
+            Assert.Equal(0, itinerary.CurrentLegIndex);
+        }
+
+        [Fact]
+        public void After_assgin_order_to_schedule_should_update_itinerary_track_target()
+        {
+            string trackingNumber = "TRS-1-00001";
+            // route WH -> HF -> NJ -SH
+            var route = _fixture.RouteTestStore[2];
+
+            var itinerary = new Itinerary(trackingNumber);
+            itinerary.TrackRoute(route.Legs);
+
+            Assert.Equal(4, itinerary.Next.Count);
+            Assert.Equal("武汉", itinerary.Next[0].LocationName);
+            Assert.Equal("合肥", itinerary.Next[1].LocationName);
+            Assert.Equal("南京", itinerary.Next[2].LocationName);
+            Assert.Equal("上海", itinerary.Next[3].LocationName);
         }
     }
 }

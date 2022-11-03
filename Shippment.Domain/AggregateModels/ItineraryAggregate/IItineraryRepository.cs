@@ -10,5 +10,7 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
     public interface IItineraryRepository : IRepository<Itinerary>
     {
         Task<bool> CreateNewItineraryAsync(Itinerary itinerary);
+        Task<Itinerary> GetAsync(string trackingNumber);
+        Task<bool> SaveItineraryAsync(Itinerary itinerary);
     }
 }

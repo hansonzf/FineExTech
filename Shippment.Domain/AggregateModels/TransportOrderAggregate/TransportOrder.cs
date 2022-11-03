@@ -75,6 +75,21 @@ namespace Shippment.Domain.AggregateModels.TransportOrderAggregate
 
         }
 
+        public void FollowSchedule(long scheduleId)
+        {
+            if (Status != OrderStatus.Standby)
+                throw new InvalidOperationException($"The transport order which Id: {Id} is not prepared");
+
+            ScheduleId = scheduleId;
+            var evt = new AssignedScheduleForOrderDomainEvent
+            { 
+                TrackingNumber = TrackingNumber,
+                AssignedSchedule = scheduleId,
+                OccuredTime = DateTime.Now
+            };
+            AddDomainEvent(evt);
+        }
+
         public void SchedulePickupService(long scheduleId, string pickupCode, EquipmentDescription dispatched)
         {
             if (Status != OrderStatus.Accepted)
@@ -103,7 +118,7 @@ namespace Shippment.Domain.AggregateModels.TransportOrderAggregate
                 Cargo cargo = item.Value;
                 _cargoList.Add(new TransportCargo(Id, barcode, cargo));
             }
-            TrackingNumber = $"TRS-{CustomerId}-{DateTime.Now.ToString("yyyyMMddhhmmss")}";
+            TrackingNumber = $"TRS-{CustomerId}-00001";
             Status = OrderStatus.Standby;
 
             var evt = new CheckedTransportCargoDomainEvent(Id, TrackingNumber, Status);

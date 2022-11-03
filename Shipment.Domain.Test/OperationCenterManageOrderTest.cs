@@ -18,7 +18,7 @@ namespace Shipment.Domain.Test
         }
 
         [Fact]
-        public void Audit_transport_order_should_be_ordered_status()
+        public void Submit_transport_order_should_be_ordered_status()
         {
             DeliverySpecification specification = new DeliverySpecification(_fixture.WUHAN, _fixture.SHANGHAI);
 
@@ -49,9 +49,9 @@ namespace Shipment.Domain.Test
         {
             EquipmentDescription pickupEquipment = new EquipmentDescription(1, "鄂A00001", EquipmentType.Vehicle);
             var orders = await _transportOrderRepository.GetWaitforAuditOrdersAsync();
+            var order = orders.Last();
 
             // in UI, user should select one of wait for audit order, and then make decision
-            var order = orders.Last();
             order.Accept(pickupEquipment);
 
             Assert.Equal(OrderStatus.Pickup, order.Status);
@@ -68,8 +68,9 @@ namespace Shipment.Domain.Test
             //   then his order after accpet will on the pickup status
             // else
             //   his order will be accpet status
-            var orders = await _transportOrderRepository.GetWaitforAuditOrdersAsync();
-            var order = orders.First();
+            DeliverySpecification specification = new DeliverySpecification(_fixture.WUHAN, _fixture.SHANGHAI);
+            var order = new TransportOrder(1, specification, _fixture.Cargos);
+            order.Submit();
 
             Assert.Throws<InvalidOperationException>(() => {
                 order.CheckCargo(new Dictionary<string, Cargo>());
@@ -86,8 +87,11 @@ namespace Shipment.Domain.Test
                 new Cargo("货C", new Dimension(new Length(2), new Length(1.3), new Length(0.9)), new Weight(0.6), 3)
             };
             Dictionary<string, Cargo> pickedCargos = cargos.ToDictionary(c => c.GetHashCode().ToString("000000"));
+            DeliverySpecification specification = new DeliverySpecification(_fixture.WUHAN, _fixture.SHANGHAI);
+            var order = new TransportOrder(1, specification, _fixture.Cargos);
+            order.Submit();
+            order.Accept();
 
-            var order = await _transportOrderRepository.GetAsync(311);
             order.CheckCargo(pickedCargos);
 
             Assert.Equal(OrderStatus.Standby, order.Status);
@@ -110,8 +114,11 @@ namespace Shipment.Domain.Test
         {
             var pickedCargos = new Dictionary<string, Cargo>();
             pickedCargos.Add("", new Cargo("货A", new Dimension(new Length(1), new Length(1.5), new Length(0.8)), new Weight(1), 9));
+            DeliverySpecification specification = new DeliverySpecification(_fixture.WUHAN, _fixture.SHANGHAI);
+            var order = new TransportOrder(1, specification, _fixture.Cargos);
+            order.Submit();
+            order.Accept();
 
-            var order = await _transportOrderRepository.GetAsync(311);
             order.CheckCargo(pickedCargos);
 
             Assert.Equal(OrderStatus.Pickup, order.Status);

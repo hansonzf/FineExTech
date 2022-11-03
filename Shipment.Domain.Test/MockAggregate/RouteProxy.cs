@@ -45,7 +45,7 @@ namespace Shipment.Domain.Test.MockAggregate
             route3.Id = 3;
             store.Add(route3);
 
-            var route4 = new RouteProxy("武汉 -> 新加坡 国际专线（6）", wh, singapore_proxy,
+            var route4 = new RouteProxy("武汉 -> 新加坡 国际专线（4）", wh, singapore_proxy,
                 new Segment[5] {
                     new Segment(wh, gz, 1009),
                     new Segment(gz, gzg, 87),
@@ -53,6 +53,8 @@ namespace Shipment.Domain.Test.MockAggregate
                     new Segment(singapore_hub, singapore, 24),
                     new Segment(singapore, singapore_proxy, 62)
                 });
+            route4.Id = 4;
+            store.Add(route4);
 
             return store;
         }

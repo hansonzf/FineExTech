@@ -2,13 +2,8 @@
 using Shippment.Domain.AggregateModels.LocationAggregate;
 using Shippment.Domain.AggregateModels.RouterAggregate;
 using Shippment.Domain.AggregateModels.TransportOrderAggregate;
-using Shippment.Domain.Events;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Shippment.Domain.AggregateModels.ItineraryAggregate
 {
@@ -38,6 +33,17 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
             get => _handings.AsReadOnly();
             protected set => _handings = value.ToList();
         }
+        public List<LocationDescription> Next
+        {
+            get
+            {
+                int pointCount = _tracker.Count;
+                if (pointCount == CurrentLegIndex)
+                    return new List<LocationDescription>();
+                else
+                    return _tracker.Skip(CurrentLegIndex).Take(pointCount - CurrentLegIndex).ToList();
+            }
+        }
 
         public void TrackRoute(List<Leg> legs)
         {
@@ -49,10 +55,10 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
                 var orderedLegs = legs.OrderBy(l => l.LegIndex);
                 foreach (var item in orderedLegs)
                 {
-                    if (_tracker.Last() == item.From)
+                    if (_tracker.Any() && _tracker.Last() == item.From)
                         continue;
 
-                    _tracker.Append(item.From);
+                    _tracker.Add(item.From);
                 }
                 _tracker.Add(orderedLegs.Last().To);
             }

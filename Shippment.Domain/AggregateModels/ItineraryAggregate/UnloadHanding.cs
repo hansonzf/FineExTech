@@ -14,11 +14,9 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
         {
             TrackingNumber = trackingNumber;
             OperationTime = DateTime.Now;
-            HandingDescription = @$"
-{OperationTime}
- 【{Location.City}】您的货物在 【{Location.LocationName}】卸货
-
-";
+            HandingDescription = 
+@$"{OperationTime}
+ 【{Location.City}】您的货物在 【{Location.LocationName}】卸货";
         }
     }
 }
