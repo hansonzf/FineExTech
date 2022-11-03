@@ -4,7 +4,7 @@ namespace Shippment.Domain.AggregateModels
 {
     public class Cargo : ValueObject
     {
-        public Cargo(string name, Dimension volume, Weight weight, int hardIndex)
+        public Cargo(string name, Cube volume, Weight weight, int hardIndex)
         {
             Volume = volume;
             Weight = weight;
@@ -12,7 +12,7 @@ namespace Shippment.Domain.AggregateModels
         }
 
         public string Name { get; private set; }
-        public Dimension Volume { get; private set; }
+        public Cube Volume { get; private set; }
         public Weight Weight { get; private set; }
         /// <summary>
         /// 由数字 1 - 9 表示，1表示货物脆弱，不可堆叠在下；9表示该货物硬度高，可堆叠在最下方

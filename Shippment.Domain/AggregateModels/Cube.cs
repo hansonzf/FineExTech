@@ -9,25 +9,25 @@ namespace Shippment.Domain.AggregateModels
         CubicMeter
     }
 
-    public class Dimension : ValueObject
+    public class Cube : ValueObject
     {
-        public Dimension(double widthNumber, double heightNumber, double lengthNumber)
+        public Cube(double widthNumber, double heightNumber, double lengthNumber)
         {
-            Width = new Length(widthNumber);
-            Height = new Length(heightNumber);
-            Length = new Length(lengthNumber);
+            Width = new Line(widthNumber);
+            Height = new Line(heightNumber);
+            Length = new Line(lengthNumber);
         }
 
-        public Dimension(Length width, Length height, Length length)
+        public Cube(Line width, Line height, Line length)
         {
             Width = width;
             Height = height;
             Length = length;
         }
 
-        public Length Width { get; private set; }
-        public Length Height { get; private set; }
-        public Length Length { get; private set; }
+        public Line Width { get; private set; }
+        public Line Height { get; private set; }
+        public Line Length { get; private set; }
         public UnitOfVolume Unit { get; private set; }
         public double Volume
         {

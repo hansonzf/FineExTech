@@ -94,7 +94,7 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
             if (!_handings.Any())
                 return string.Empty;
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             var orderedHandings = _handings.OrderBy(h => h.OperationTime);
             foreach (var evt in orderedHandings)
             {

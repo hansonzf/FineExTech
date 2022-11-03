@@ -83,7 +83,7 @@ namespace Shipment.Domain.Test
         {
             string trackingNumber = "TRS999999999";
             string barcode = "123456";
-            Cargo cargo = new("测试货物", new Dimension(0.2, 0.5, 0.4), new Weight(0.2), 5);
+            Cargo cargo = new("测试货物", new Cube(0.2, 0.5, 0.4), new Weight(0.2), 5);
             var schedule = await GenerateScheduleWithStandbyStatus();
             // 计划中的体积装载率计算是，装载的货物总体积 / 运输车辆的最大容积
             // (本测试中，已装载的货物容积是0.2*0.5*0.4=0.04立方米 / 车辆的最大容积是0.6立方米)
@@ -103,7 +103,7 @@ namespace Shipment.Domain.Test
         {
             string trackingNumber = "";
             string barcode = "123456";
-            Cargo cargo = new("测试货物", new Dimension(0.2, 0.5, 0.4), new Weight(0.2), 5);
+            Cargo cargo = new("测试货物", new Cube(0.2, 0.5, 0.4), new Weight(0.2), 5);
             var schedule = await GenerateScheduleWithStandbyStatus();
 
             bool result = schedule.TakeOnCargo(trackingNumber, barcode, cargo);
@@ -115,8 +115,8 @@ namespace Shipment.Domain.Test
         public async Task Unloading_transport_cargo_should_success()
         {
             string trackingNumber = "TRS999999999";
-            Cargo cargo = new("测试货物", new Dimension(0.2, 0.5, 0.4), new Weight(0.2), 5);
-            Cargo willUnloadCargo = new("将被移除的货物", new Dimension(0.4, 0.3, 0.6), new Weight(0.5), 5);
+            Cargo cargo = new("测试货物", new Cube(0.2, 0.5, 0.4), new Weight(0.2), 5);
+            Cargo willUnloadCargo = new("将被移除的货物", new Cube(0.4, 0.3, 0.6), new Weight(0.5), 5);
             var schedule = await GenerateScheduleWithStandbyStatus();
             double expectVolumeRate = 6.67;
             double expectWeightRate = 20;

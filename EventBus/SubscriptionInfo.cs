@@ -14,10 +14,10 @@
             }
 
             public static SubscriptionInfo Dynamic(Type handlerType) =>
-                new SubscriptionInfo(true, handlerType);
+                new(true, handlerType);
 
             public static SubscriptionInfo Typed(Type handlerType) =>
-                new SubscriptionInfo(false, handlerType);
+                new(false, handlerType);
         }
     }
 }

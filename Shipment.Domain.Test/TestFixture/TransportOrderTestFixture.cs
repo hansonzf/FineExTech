@@ -50,8 +50,8 @@ namespace Shipment.Domain.Test.TestFixture
                 "");
         public IEnumerable<Cargo> Cargos = new List<Cargo>
         {
-            new Cargo("20个iphone 14 pro", new Dimension(0.5, 0.4, 0.8), new Weight(12, UnitOfWeight.KiloGram), 4),
-            new Cargo("20个iphone 14 pro max", new Dimension(0.6, 0.5, 1), new Weight(15, UnitOfWeight.KiloGram), 4),
+            new Cargo("20个iphone 14 pro", new Cube(0.5, 0.4, 0.8), new Weight(12, UnitOfWeight.KiloGram), 4),
+            new Cargo("20个iphone 14 pro max", new Cube(0.6, 0.5, 1), new Weight(15, UnitOfWeight.KiloGram), 4),
         };
     }
 }

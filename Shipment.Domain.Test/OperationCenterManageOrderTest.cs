@@ -82,9 +82,9 @@ namespace Shipment.Domain.Test
         {
             Cargo[] cargos = new Cargo[3]
             {
-                new Cargo("货A", new Dimension(new Length(1), new Length(1.5), new Length(0.8)), new Weight(1), 9),
-                new Cargo("货B", new Dimension(new Length(0.5), new Length(1.2), new Length(0.6)), new Weight(1.5), 6),
-                new Cargo("货C", new Dimension(new Length(2), new Length(1.3), new Length(0.9)), new Weight(0.6), 3)
+                new Cargo("货A", new Cube(new Line(1), new Line(1.5), new Line(0.8)), new Weight(1), 9),
+                new Cargo("货B", new Cube(new Line(0.5), new Line(1.2), new Line(0.6)), new Weight(1.5), 6),
+                new Cargo("货C", new Cube(new Line(2), new Line(1.3), new Line(0.9)), new Weight(0.6), 3)
             };
             Dictionary<string, Cargo> pickedCargos = cargos.ToDictionary(c => c.GetHashCode().ToString("000000"));
             DeliverySpecification specification = new DeliverySpecification(_fixture.WUHAN, _fixture.SHANGHAI);
@@ -113,7 +113,7 @@ namespace Shipment.Domain.Test
         public async Task Check_transport_order_without_cargos_should_pickup_status()
         {
             var pickedCargos = new Dictionary<string, Cargo>();
-            pickedCargos.Add("", new Cargo("货A", new Dimension(new Length(1), new Length(1.5), new Length(0.8)), new Weight(1), 9));
+            pickedCargos.Add("", new Cargo("货A", new Cube(new Line(1), new Line(1.5), new Line(0.8)), new Weight(1), 9));
             DeliverySpecification specification = new DeliverySpecification(_fixture.WUHAN, _fixture.SHANGHAI);
             var order = new TransportOrder(1, specification, _fixture.Cargos);
             order.Submit();

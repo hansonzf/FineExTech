@@ -39,16 +39,16 @@ namespace Shipment.Domain.Test.MockAggregate
             additionalCargo.Add("12345",
                 new Cargo(
                     "1立方米的水",
-                    new Dimension(new Length(1), new Length(1), new Length(1)),
+                    new Cube(new Line(1), new Line(1), new Line(1)),
                     new Weight(1),
                     9
                 ));
 
             IEnumerable<Cargo> cargos = new List<Cargo>
             {
-                new Cargo("水泥", new Dimension(2, 3, 1.2), new Weight(12, UnitOfWeight.Tonne), 9),
-                new Cargo("砖头", new Dimension(4, 5, 2), new Weight(25, UnitOfWeight.Tonne), 9),
-                new Cargo("电冰箱10台", new Dimension(8.2, 7.8, 1.76), new Weight(1596, UnitOfWeight.KiloGram), 4),
+                new Cargo("水泥", new Cube(2, 3, 1.2), new Weight(12, UnitOfWeight.Tonne), 9),
+                new Cargo("砖头", new Cube(4, 5, 2), new Weight(25, UnitOfWeight.Tonne), 9),
+                new Cargo("电冰箱10台", new Cube(8.2, 7.8, 1.76), new Weight(1596, UnitOfWeight.KiloGram), 4),
             };
 
             order = new TransportOrderProxy(1, new DeliverySpecification(wh, sh), cargos) 

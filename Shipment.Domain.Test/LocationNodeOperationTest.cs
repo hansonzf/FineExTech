@@ -1,13 +1,10 @@
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Shipment.Domain.Test.TestFixture;
-using Shippment.Domain;
 using Shippment.Domain.AggregateModels;
 using Shippment.Domain.AggregateModels.EquipmentAggregate;
 using Shippment.Domain.AggregateModels.ItineraryAggregate;
 using Shippment.Domain.AggregateModels.LocationAggregate;
 using Shippment.Domain.AggregateModels.RouterAggregate;
 using Shippment.Domain.AggregateModels.ScheduleAggregate;
-using Shippment.Domain.AggregateModels.TransportOrderAggregate;
 using Shippment.Domain.Events;
 using Xunit.Abstractions;
 
@@ -109,17 +106,7 @@ namespace Shipment.Domain.Test
             Assert.False(result);
         }
 
-        private Itinerary GenerateTestItinerary()
-        {
-            string trackingNumber = "TRS-1-00001";
-            var route = GenerateTestRoute();
-            var itinerary = new Itinerary(trackingNumber);
-            itinerary.TrackRoute(route.Legs);
-
-            return itinerary;
-        }
-
-        public Route GenerateTestRoute()
+        private Route GenerateTestRoute()
         {
             LocationDescription origin = new LocationDescription(1, "发网武汉临空港一仓", "武汉");
             LocationDescription destination = new LocationDescription(2, "发网总公司", "上海");
@@ -132,6 +119,80 @@ namespace Shipment.Domain.Test
             };
 
             return new Route("测试路由", origin, destination, segments);
+        }
+
+        private Itinerary GenerateTestItinerary()
+        {
+            string trackingNumber = "TRS-1-00001";
+            var route = GenerateTestRoute();
+            var itinerary = new Itinerary(trackingNumber);
+            itinerary.TrackRoute(route.Legs);
+
+            return itinerary;
+        }
+
+        private List<Handing> GetHandingSteps(int stepCount)
+        {
+            LocationDescription origin = new LocationDescription(1, "发网武汉临空港一仓", "武汉");
+            LocationDescription destination = new LocationDescription(2, "发网总公司", "上海");
+            LocationDescription step1 = new LocationDescription(3, "发网南京中转站", "南京");
+
+            List<Handing> handings = new List<Handing>
+            {
+                new LoadHanding(origin),
+                new DepartureHanding(origin),
+                new ArrivalHanding(step1),
+                new UnloadHanding(step1),
+                new LoadHanding(step1),
+                new DepartureHanding(step1),
+                new ArrivalHanding(destination),
+                new UnloadHanding(destination)
+        };
+
+            return handings.Take(stepCount).ToList();
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        [InlineData(6)]
+        public void Work_scan_tracking_number_will_get_the_guid_of_cargo_future_path(int step)
+        {
+            string trackingNumber = "TRS-1-00001";
+            var itinerary = GenerateTestItinerary();
+
+            if (step > 0)
+            {
+                var handings = GetHandingSteps(step);
+                handings.ForEach(handing => {
+                    handing.Process(trackingNumber);
+                    itinerary.Log(handing);
+                });
+            }
+
+            if (step < 3)
+            {
+                Assert.Equal(3, itinerary.Next.Count);
+                Assert.Equal("发网武汉临空港一仓", itinerary.Next[0].LocationName);
+                Assert.Equal("发网南京中转站", itinerary.Next[1].LocationName);
+                Assert.Equal("发网总公司", itinerary.Next[2].LocationName);
+            }
+            else if (step < 7)
+            {
+                Assert.Equal(2, itinerary.Next.Count);
+                Assert.Equal("发网南京中转站", itinerary.Next[0].LocationName);
+                Assert.Equal("发网总公司", itinerary.Next[1].LocationName);
+            }
+            else
+            {
+                Assert.Single(itinerary.Next);
+                Assert.Equal("发网总公司", itinerary.Next[0].LocationName);
+            }
+            
         }
 
         [Fact]
@@ -147,21 +208,68 @@ namespace Shipment.Domain.Test
             _output.WriteLine(itinerary.FlushLog());
 
             Assert.NotEmpty(itinerary.Handings);
+            Assert.Equal(0, itinerary.CurrentLegIndex);
         }
 
         [Fact]
-        public void Worker_scan_tracking_number_and_then_depart()
+        public void Worker_scan_tracking_number_then_the_truck_depart()
         {
             string trackingNumber = "TRS-1-00001";
-            LocationDescription wh = new LocationDescription(1, "发网武汉临空港一仓", "武汉");
             var itinerary = GenerateTestItinerary();
 
-            var handing1 = new LoadHanding(wh);
-            handing1.Process(trackingNumber);
-            var handing2 = new DepartureHanding(wh);
-            handing2.Process(trackingNumber);
-            itinerary.Log(handing1);
-            itinerary.Log(handing2);
+            var handings = GetHandingSteps(2);
+            handings.ForEach(handing => {
+                handing.Process(trackingNumber);
+                itinerary.Log(handing);
+            });
+            _output.WriteLine(itinerary.FlushLog());
+
+            Assert.NotEmpty(itinerary.Handings);
+        }
+
+        [Fact]
+        public void Truck_driver_arrived_destination_should_check_in()
+        {
+            string trackingNumber = "TRS-1-00001";
+            var itinerary = GenerateTestItinerary();
+
+            var handings = GetHandingSteps(3);
+            handings.ForEach(handing => {
+                handing.Process(trackingNumber);
+                itinerary.Log(handing);
+            });
+            _output.WriteLine(itinerary.FlushLog());
+
+            Assert.NotEmpty(itinerary.Handings);
+        }
+
+        [Fact]
+        public void After_truck_driver_checked_in_worker_should_unloading_cargos()
+        {
+            string trackingNumber = "TRS-1-00001";
+            var itinerary = GenerateTestItinerary();
+
+            var handings = GetHandingSteps(4);
+            handings.ForEach(handing => {
+                handing.Process(trackingNumber);
+                itinerary.Log(handing);
+            });
+            _output.WriteLine(itinerary.FlushLog());
+
+            Assert.NotEmpty(itinerary.Handings);
+        }
+
+        [Fact]
+        public void Truck_arrived_second_segment_of_route()
+        {
+            string trackingNumber = "TRS-1-00001";
+            var itinerary = GenerateTestItinerary();
+
+            var handings = GetHandingSteps(6);
+            handings.ForEach(handing => {
+                handing.Process(trackingNumber);
+                itinerary.Log(handing);
+            });
             _output.WriteLine(itinerary.FlushLog());
 
             Assert.NotEmpty(itinerary.Handings);

@@ -9,9 +9,9 @@ namespace Shippment.Domain.AggregateModels
         Meter = 3
     }
 
-    public class Length : ValueObject
+    public class Line : ValueObject
     {
-        public Length(double number, UnitOfLength unit = UnitOfLength.Meter)
+        public Line(double number, UnitOfLength unit = UnitOfLength.Meter)
         {
             Number = number;
             Unit = unit;
@@ -20,10 +20,10 @@ namespace Shippment.Domain.AggregateModels
         public double Number { get; private set; }
         public UnitOfLength Unit { get; private set; }
 
-        public Length ChangeUnit(UnitOfLength newUnit)
+        public Line ChangeUnit(UnitOfLength newUnit)
         {
             Number *= Math.Pow(10, (int)Unit - (int)newUnit);
-            return new Length(Number, newUnit);
+            return new Line(Number, newUnit);
         }
 
         protected override IEnumerable<object> GetEqualityComponents()
