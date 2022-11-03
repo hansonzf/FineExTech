@@ -70,9 +70,9 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
                 return false;
 
             var from = _tracker.First();
-            var to = _tracker.Last();
+            var to = _tracker.ElementAt(CurrentLegIndex);
 
-            if (from == goal.Origin && to == goal.Destination)
+            if (from.LocationId == goal.Origin.LocationId && to.LocationId == goal.Destination.LocationId)
                 return true;
             else
                 return false;

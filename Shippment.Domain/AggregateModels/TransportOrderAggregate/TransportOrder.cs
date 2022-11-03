@@ -40,7 +40,6 @@ namespace Shippment.Domain.AggregateModels.TransportOrderAggregate
         public DeliverySpecification Goal { get; protected set; }
         public OrderStatus Status { get; protected set; }
         public PickupDescription PickupCargoInfo { get; protected set; }
-        public string DeliveryCode { get; protected set; }
         public DateTime? OrderTime { get; protected set; }
         public ReadOnlyCollection<TransportCargo> CargoList
         {
@@ -63,7 +62,6 @@ namespace Shippment.Domain.AggregateModels.TransportOrderAggregate
                 throw new InvalidOperationException();
 
             Status = PickupCargoInfo.NeedPickupService ? OrderStatus.Pickup : OrderStatus.Accepted;
-            DeliveryCode = new Random(1).Next(0, 9999).ToString("0000");
             AddDomainEvent(new AcceptTransportOrderDomainEvent
             {
                 TransportOrderId = Id,

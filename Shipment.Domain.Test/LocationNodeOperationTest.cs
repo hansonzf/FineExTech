@@ -5,6 +5,7 @@ using Shippment.Domain.AggregateModels.ItineraryAggregate;
 using Shippment.Domain.AggregateModels.LocationAggregate;
 using Shippment.Domain.AggregateModels.RouterAggregate;
 using Shippment.Domain.AggregateModels.ScheduleAggregate;
+using Shippment.Domain.AggregateModels.TransportOrderAggregate;
 using Shippment.Domain.Events;
 using Xunit.Abstractions;
 
@@ -273,6 +274,44 @@ namespace Shipment.Domain.Test
             _output.WriteLine(itinerary.FlushLog());
 
             Assert.NotEmpty(itinerary.Handings);
+        }
+
+        [Fact]
+        public void Examine_cargo_whether_specified_goal_when_the_route_not_complete()
+        {
+            string trackingNumber = "TRS-1-00001";
+            DeliverySpecification specification = new DeliverySpecification(
+                new LocationDescription(1, "发网武汉临空港一仓", "武汉"),
+                new LocationDescription(3, "发网南京中转站", "南京"));
+            var itinerary = GenerateTestItinerary();
+
+            var handings = GetHandingSteps(3);
+            handings.ForEach(handing => {
+                handing.Process(trackingNumber);
+                itinerary.Log(handing);
+            });
+            bool isMatch = itinerary.IsMatchDeliveryGoal(specification);
+
+            Assert.True(isMatch);
+        }
+
+        [Fact]
+        public void Examine_cargo_whether_specified_goal()
+        {
+            string trackingNumber = "TRS-1-00001";
+            DeliverySpecification specification = new DeliverySpecification(
+                new LocationDescription(1, "发网武汉临空港一仓", "武汉"),
+                new LocationDescription(2, "发网总公司", "上海"));
+            var itinerary = GenerateTestItinerary();
+
+            var handings = GetHandingSteps(3);
+            handings.ForEach(handing => {
+                handing.Process(trackingNumber);
+                itinerary.Log(handing);
+            });
+            bool isMatch = itinerary.IsMatchDeliveryGoal(specification);
+
+            Assert.False(isMatch);
         }
     }
 }

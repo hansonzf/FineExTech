@@ -33,7 +33,6 @@ namespace Shipment.Domain.Test
         {
             var orders = await _transportOrderRepository.GetWaitforAuditOrdersAsync();
 
-            // in UI, user should select one of wait for audit order, and then make decision
             var order = orders.First();
             order.Accept();
 
@@ -47,11 +46,14 @@ namespace Shipment.Domain.Test
         [Fact]
         public async Task Audit_transport_order_with_pickup_service_should_be_pickup_status()
         {
+            // if shipper choose pickup cargo service,
+            //   then his order after accpet will on the pickup status
+            // else
+            //   his order will be accpet status
             EquipmentDescription pickupEquipment = new EquipmentDescription(1, "鄂A00001", EquipmentType.Vehicle);
             var orders = await _transportOrderRepository.GetWaitforAuditOrdersAsync();
             var order = orders.Last();
 
-            // in UI, user should select one of wait for audit order, and then make decision
             order.Accept(pickupEquipment);
 
             Assert.Equal(OrderStatus.Pickup, order.Status);
@@ -64,10 +66,6 @@ namespace Shipment.Domain.Test
         [Fact]
         public async Task Check_only_on_pickup_and_accept_status_order_could_check_cargos()
         {
-            // if shipper choose pickup cargo service,
-            //   then his order after accpet will on the pickup status
-            // else
-            //   his order will be accpet status
             DeliverySpecification specification = new DeliverySpecification(_fixture.WUHAN, _fixture.SHANGHAI);
             var order = new TransportOrder(1, specification, _fixture.Cargos);
             order.Submit();
@@ -107,22 +105,6 @@ namespace Shipment.Domain.Test
             Assert.Throws<ArgumentNullException>(() => { 
                 order.CheckCargo(new Dictionary<string, Cargo>());
             });
-        }
-
-        [Fact]
-        public async Task Check_transport_order_without_cargos_should_pickup_status()
-        {
-            var pickedCargos = new Dictionary<string, Cargo>();
-            pickedCargos.Add("", new Cargo("货A", new Cube(new Line(1), new Line(1.5), new Line(0.8)), new Weight(1), 9));
-            DeliverySpecification specification = new DeliverySpecification(_fixture.WUHAN, _fixture.SHANGHAI);
-            var order = new TransportOrder(1, specification, _fixture.Cargos);
-            order.Submit();
-            order.Accept();
-
-            order.CheckCargo(pickedCargos);
-
-            Assert.Equal(OrderStatus.Pickup, order.Status);
-            Assert.Empty(order.CargoList);
         }
 
         [Fact]

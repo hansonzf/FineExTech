@@ -84,7 +84,6 @@ namespace Shipment.Domain.Test.MockAggregate
                 Id = 300,
                 Status = OrderStatus.Accepted,
                 ScheduleId = 1,
-                DeliveryCode = "8888"
             };
             _orders.Add(order);
 
@@ -93,7 +92,6 @@ namespace Shipment.Domain.Test.MockAggregate
                 Id = 310,
                 Status = OrderStatus.Accepted,
                 ScheduleId = 2,
-                DeliveryCode = "8888"
             };
             _orders.Add(order);
 
@@ -102,7 +100,6 @@ namespace Shipment.Domain.Test.MockAggregate
                 Id = 311,
                 Status = OrderStatus.Accepted,
                 ScheduleId = 3,
-                DeliveryCode = "8888"
             };
             _orders.Add(order);
 
@@ -111,7 +108,6 @@ namespace Shipment.Domain.Test.MockAggregate
                 Id = 420,
                 Status = OrderStatus.Accepted,
                 ScheduleId = 2,
-                DeliveryCode = "6666"
             };
             order.CheckCargo(additionalCargo);
             _orders.Add(order);
