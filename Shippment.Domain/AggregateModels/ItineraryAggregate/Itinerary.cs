@@ -30,7 +30,7 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
 
         public ReadOnlyCollection<Handing> Handings
         {
-            get => _handings.AsReadOnly();
+            get => _handings.OrderBy(h => h.OperationTime).ToList().AsReadOnly();
             protected set => _handings = value.ToList();
         }
         public List<LocationDescription> Next
@@ -52,16 +52,41 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
 
             if (legs.Count > 1)
             {
-                var orderedLegs = legs.OrderBy(l => l.LegIndex);
-                foreach (var item in orderedLegs)
-                {
-                    if (_tracker.Any() && _tracker.Last() == item.From)
-                        continue;
-
-                    _tracker.Add(item.From);
-                }
-                _tracker.Add(orderedLegs.Last().To);
+                if (_tracker.Any())
+                    HandleRedirectTrack(legs);
+                else
+                    HandleNewTrack(legs);
             }
+        }
+
+        private void HandleNewTrack(List<Leg> legs)
+        {
+            var orderedLegs = legs.OrderBy(l => l.LegIndex);
+            foreach (var item in orderedLegs)
+            {
+                if (_tracker.Any() && _tracker.Last() == item.From)
+                    continue;
+
+                _tracker.Add(item.From);
+            }
+            _tracker.Add(orderedLegs.Last().To);
+        }
+        private void HandleRedirectTrack(List<Leg> legs)
+        {
+            var currentLocation = _tracker[CurrentLegIndex];
+            var locationHandings = Handings.Where(h => h.Location.LocationId == currentLocation.LocationId)
+                .OrderBy(h => h.OperationTime)
+                .AsEnumerable();
+
+            int reserveIndex = 0; int discardCount = 0; int totalLegs = _tracker.Count;
+            if (locationHandings.Any(h => h.HandingType == Handing.Departing))
+                reserveIndex = CurrentLegIndex + 2;
+            else
+                reserveIndex = CurrentLegIndex + 1;
+            discardCount = totalLegs - reserveIndex;
+            _tracker.RemoveRange(reserveIndex, discardCount);
+
+            HandleNewTrack(legs);
         }
 
         public bool IsMatchDeliveryGoal(DeliverySpecification goal)
