@@ -1,9 +1,8 @@
 ﻿using Shippment.Domain.AggregateModels;
 using Shippment.Domain.AggregateModels.ScheduleAggregate;
 using Shippment.Domain.AggregateModels.TransportOrderAggregate;
-using Shippment.Domain.Services;
 
-namespace Shippment.Domain
+namespace Shippment.Domain.Services
 {
     public class StowageService : IStowageService
     {
@@ -30,6 +29,9 @@ namespace Shippment.Domain
             DateTime timeBar = schedule.Efficiency.EstimateSetoutTime.AddMinutes(-30);
             if (DateTime.Now > timeBar)
                 return new StowageResult { Result = false, Message = "schedule has finished preparing yet" };
+            if (schedule.Equipment.MaxLoadWeight < order.CargoList.Sum(c => c.CargoInfo.Weight.Number) ||
+                schedule.Equipment.MaxLoadVolume < order.CargoList.Sum(c => c.CargoInfo.Volume.Volume))
+                return new StowageResult { Result = false, Message = "The equipment can not load any more" };
 
             foreach (var cargo in order.CargoList)
             {
@@ -44,7 +46,7 @@ namespace Shippment.Domain
                 result = await _repository.SaveAsync(schedule, order);
             }
 
-            return new StowageResult { Result = result, Message = "" };
+            return new StowageResult { Result = result, Message = "stowage success" };
         }
     }
 }
