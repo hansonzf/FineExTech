@@ -56,6 +56,14 @@ namespace Shipment.Domain.Test.MockAggregate
             route4.Id = 4;
             store.Add(route4);
 
+            var route5 = new RouteProxy("南京 -> 武汉 干线中转（1）", nj, wh, 
+                new Segment[2] {
+                    new Segment(nj, hf, 350),
+                    new Segment(hf, wh, 300)
+                });
+            route5.Id = 5;
+            store.Add(route5);
+
             return store;
         }
     }

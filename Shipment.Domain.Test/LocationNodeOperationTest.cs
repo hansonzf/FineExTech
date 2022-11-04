@@ -197,6 +197,23 @@ namespace Shipment.Domain.Test
         }
 
         [Fact]
+        public void After_assign_order_to_schedule_should_update_itinerary_track_target()
+        {
+            string trackingNumber = "TRS-1-00001";
+            // route WH -> HF -> NJ -SH
+            var route = _fixture.RouteTestStore[2];
+
+            var itinerary = new Itinerary(trackingNumber);
+            itinerary.TrackRoute(route.Legs);
+
+            Assert.Equal(4, itinerary.Next.Count);
+            Assert.Equal("武汉", itinerary.Next[0].LocationName);
+            Assert.Equal("合肥", itinerary.Next[1].LocationName);
+            Assert.Equal("南京", itinerary.Next[2].LocationName);
+            Assert.Equal("上海", itinerary.Next[3].LocationName);
+        }
+
+        [Fact]
         public void Worker_scan_tracking_number_and_loading_cargo()
         {
             string trackingNumber = "TRS-1-00001";
@@ -242,6 +259,23 @@ namespace Shipment.Domain.Test
             _output.WriteLine(itinerary.FlushLog());
 
             Assert.NotEmpty(itinerary.Handings);
+        }
+
+        [Fact]
+        public void Worker_scan_tracking_number_will_get_cargo_future_path()
+        {
+            string trackingNumber = "TRS-1-00001";
+            var itinerary = GenerateTestItinerary();
+
+            var handings = GetHandingSteps(3);
+            handings.ForEach(handing => {
+                handing.Process(trackingNumber);
+                itinerary.Log(handing);
+            });
+            _output.WriteLine(itinerary.FlushLog());
+
+            Assert.Equal("发网南京中转站", itinerary.Next[0].LocationName);
+            Assert.Equal("发网总公司", itinerary.Next[1].LocationName);
         }
 
         [Fact]

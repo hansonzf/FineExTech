@@ -1,4 +1,5 @@
-﻿using Shipment.Domain.Test.TestFixture;
+﻿using Microsoft.VisualStudio.TestPlatform.Utilities;
+using Shipment.Domain.Test.TestFixture;
 using Shippment.Domain.AggregateModels;
 using Shippment.Domain.AggregateModels.ItineraryAggregate;
 using Shippment.Domain.AggregateModels.LocationAggregate;
@@ -147,21 +148,51 @@ namespace Shipment.Domain.Test
             Assert.Equal(0, itinerary.CurrentLegIndex);
         }
 
+        
+
         [Fact]
-        public void After_assgin_order_to_schedule_should_update_itinerary_track_target()
+        public void Assigned_schedule_executed_but_not_complete_then_changed_the_destination()
         {
             string trackingNumber = "TRS-1-00001";
             // route WH -> HF -> NJ -SH
             var route = _fixture.RouteTestStore[2];
+            var backRoute = _fixture.RouteTestStore[4];
 
             var itinerary = new Itinerary(trackingNumber);
             itinerary.TrackRoute(route.Legs);
+            var handings = GetHandingSteps(6);
+            handings.ForEach(handing => {
+                handing.Process(trackingNumber);
+                itinerary.Log(handing);
+            });
+            itinerary.TrackRoute(backRoute.Legs);
 
-            Assert.Equal(4, itinerary.Next.Count);
-            Assert.Equal("武汉", itinerary.Next[0].LocationName);
-            Assert.Equal("合肥", itinerary.Next[1].LocationName);
-            Assert.Equal("南京", itinerary.Next[2].LocationName);
-            Assert.Equal("上海", itinerary.Next[3].LocationName);
+            Assert.Equal("合肥", itinerary.Next[0].LocationName);
+            Assert.Equal("南京", itinerary.Next[1].LocationName);
+            Assert.Equal("合肥", itinerary.Next[2].LocationName);
+            Assert.Equal("武汉", itinerary.Next[3].LocationName);
+        }
+
+        private List<Handing> GetHandingSteps(int step)
+        {
+            LocationDescription wh = new LocationDescription(1, "武汉");
+            LocationDescription hf = new LocationDescription(2, "合肥");
+            LocationDescription nj = new LocationDescription(3, "南京");
+
+
+            List<Handing> handings = new List<Handing>
+            {
+                new LoadHanding(wh),
+                new DepartureHanding(wh),
+                new ArrivalHanding(hf),
+                new UnloadHanding(hf),
+                new LoadHanding(hf),
+                new DepartureHanding(hf),
+                new ArrivalHanding(nj),
+                new UnloadHanding(nj)
+        };
+
+            return handings.Take(step).ToList();
         }
     }
 }

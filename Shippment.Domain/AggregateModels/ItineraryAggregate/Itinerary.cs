@@ -73,12 +73,31 @@ namespace Shippment.Domain.AggregateModels.ItineraryAggregate
         }
         private void HandleRedirectTrack(List<Leg> legs)
         {
+            int startTestMatchIndex = CurrentLegIndex;
             var currentLocation = _tracker[CurrentLegIndex];
             var locationHandings = Handings.Where(h => h.Location.LocationId == currentLocation.LocationId)
                 .OrderBy(h => h.OperationTime)
                 .AsEnumerable();
+            if (locationHandings.Any(h => h.HandingType == Handing.Departing))
+                startTestMatchIndex = CurrentLegIndex + 1;
 
-            int reserveIndex = 0; int discardCount = 0; int totalLegs = _tracker.Count;
+            int totalLegs = _tracker.Count;
+            bool routeHasIntersectPoint = false;
+            LocationDescription newStartLocation = default;
+            for (int i = startTestMatchIndex; i < totalLegs; i++)
+            {
+                var match = legs.FirstOrDefault(l => l.From.LocationId == _tracker[i].LocationId);
+                if (match is not null)
+                {
+                    routeHasIntersectPoint = true;
+                    newStartLocation = match.From;
+                    break;
+                }    
+            }
+            if (!routeHasIntersectPoint)
+                throw new InvalidOperationException("The cargo future route will not intersect with specific route");
+
+            int reserveIndex = _tracker.IndexOf(newStartLocation) + 1; int discardCount = 0; 
             if (locationHandings.Any(h => h.HandingType == Handing.Departing))
                 reserveIndex = CurrentLegIndex + 2;
             else
