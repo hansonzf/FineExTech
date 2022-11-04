@@ -11,11 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DomainBase\DomainBase.csproj" />
-    <ProjectReference Include="..\Shippment.Domain\Shippment.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Application\DomainEventHandlers\ArrivedTransportDestination\" />
     <Folder Include="Application\DomainEventHandlers\CancelTransportOrder\" />
     <Folder Include="Application\DomainEventHandlers\ScheduleSetoutTimeChanged\" />
@@ -27,6 +22,10 @@
     <Folder Include="Application\DomainEventHandlers\TransportOrderStatusChanged\" />
     <Folder Include="Application\DomainEventHandlers\CargoHanding\" />
     <Folder Include="Application\DomainEventHandlers\RouteChanged\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shippment.Domain\Shippment.Domain.csproj" />
   </ItemGroup>
 
 </Project>
