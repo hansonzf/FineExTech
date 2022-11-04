@@ -10,13 +10,13 @@ namespace Shippment.Domain.AggregateModels.EquipmentAggregate
         public double MaxLoadVolume { get; private set; }
         public double MaxLoadWeight { get; private set; }
 
-        public EquipmentDescription(long equipmentId, string trackIdentifier, EquipmentType type, double dimension = 0, double weight = 0)
+        public EquipmentDescription(long equipmentId, string trackIdentifier, EquipmentType type, double maxLoadVolume = 0, double maxLoadWeight = 0)
         {
             EquipmentId = equipmentId;
             Identifier = trackIdentifier;
             Type = type;
-            MaxLoadVolume = dimension;
-            MaxLoadWeight = weight;
+            MaxLoadVolume = maxLoadVolume;
+            MaxLoadWeight = maxLoadWeight;
         }
 
         protected override IEnumerable<object> GetEqualityComponents()
