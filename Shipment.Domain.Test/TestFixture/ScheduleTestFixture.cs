@@ -47,5 +47,6 @@ namespace Shipment.Domain.Test.TestFixture
         public IEquipmentRepository EquipmentRepository => equipmentTestDataFixture.EquipmentRepository;
         public ITransportScheduleRepository ScheduleRepository => _mockRepository.Object;
         public ITransportOrderRepository TransportOrderRepository => orderTestFixture.TransportOrderRepository;
+        public TransportOrderTestFixture OrderTestFixture => orderTestFixture;
     }
 }

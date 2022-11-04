@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Shippment.Domain.AggregateModels.ScheduleAggregate
@@ -25,20 +26,26 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
             : this()
         {
             PickupInfo = PickupInformation.CopyFrom(pickupDescription);
-            ScheduleNumber = DateTime.Now.ToString("yyyyMMddhhmmssffff");
-            Equipment = equipment;
-            From = from;
-            To = new LocationDescription(0, pickupDescription.DetailAddress);
-            Efficiency = new TimeManagement(estimateSetoutTime);
-            Status = ScheduleStatus.Created;
-
-            //AddDomainEvent(new MakingScheduleDomainEvent(RouteId, Equipment, From, To, Efficiency));
+            if (PickupInfo.Meaningful())
+            {
+                ScheduleNumber = DateTime.Now.ToString("yyyyMMddhhmmssffff");
+                Equipment = equipment;
+                From = from;
+                To = new LocationDescription(0, pickupDescription.DetailAddress);
+                Efficiency = new TimeManagement(estimateSetoutTime);
+                Status = ScheduleStatus.Standby;
+            }
+            else
+            {
+                throw new InvalidOperationException("Pickup information must be accurate");
+            }
         }
 
         public override bool Execute(LocationDescription departureLocation)
         {
             if (!PickupInfo.Meaningful())
                 return false;
+            PickupInfo.GeneratePickupCode();
 
             return base.Execute(departureLocation);
         }
@@ -51,7 +58,6 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
 
     public class PickupInformation : ValueObject
     {
-        private readonly DateTime minDate = new DateTime(1753, 1, 1);
         public string PickupCode { get; private set; }
         public string DetailAddress { get; private set; }
         public string ContactName { get; private set; }
@@ -72,20 +78,18 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
             Remark = remark;
         }
 
-        public bool GeneratePickupCode()
+        public void GeneratePickupCode()
         {
             PickupCode = new Random(1).Next(0, 9999).ToString("0000");
-            return !string.IsNullOrEmpty(PickupCode);
         }
 
         public bool Meaningful()
         {
             bool result = true;
             result &= !string.IsNullOrEmpty(ContactName);
-            result &= !string.IsNullOrEmpty(Phone);
+            result &= Regex.IsMatch(Phone, @"^(1)\d{10}$");
             result &= !string.IsNullOrEmpty(DetailAddress);
-            result &= !string.IsNullOrEmpty(PickupCode);
-            result &= PickupTime != minDate;
+            result &= PickupTime != DateTimeConstant.MinDateTime;
 
             return result;
         }

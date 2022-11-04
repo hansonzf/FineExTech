@@ -161,7 +161,7 @@ namespace Shipment.Domain.Test
         [InlineData(4)]
         [InlineData(5)]
         [InlineData(6)]
-        public void Work_scan_tracking_number_will_get_the_guid_of_cargo_future_path(int step)
+        public void Worker_scan_tracking_number_will_get_the_guid_of_cargo_future_path(int step)
         {
             string trackingNumber = "TRS-1-00001";
             var itinerary = GenerateTestItinerary();

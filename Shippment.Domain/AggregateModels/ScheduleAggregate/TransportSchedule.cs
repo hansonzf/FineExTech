@@ -121,7 +121,12 @@ namespace Shippment.Domain.AggregateModels.ScheduleAggregate
                 AddDomainEvent(new ScheduleExecutedDomainEvent { 
                     ScheduleId = Id,
                     OccuredTime = DateTime.Now,
-                    Type = ScheduleType.Transport,
+                    Type = this.GetType().Name switch
+                    {
+                        "TransportSchedule" => ScheduleType.Transport,
+                        "PickupSchedule" => ScheduleType.Pickup,
+                        _ => throw new NotImplementedException()
+                    },
                     Location = departureLocation
                 });
 

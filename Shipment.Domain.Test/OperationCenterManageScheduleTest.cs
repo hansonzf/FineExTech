@@ -14,12 +14,14 @@ namespace Shipment.Domain.Test
         private IRouteRepository _routeRepository;
         private IEquipmentRepository _equipmentRepository;
         private ITransportScheduleRepository _scheduleRepository;
+        private TransportOrderTestFixture _transportOrderTestFixture;
 
         public OperationCenterManageScheduleTest(ScheduleTestFixture fixture)
         {
             _routeRepository = fixture.RouteRepository;
             _equipmentRepository = fixture.EquipmentRepository;
             _scheduleRepository = fixture.ScheduleRepository;
+            _transportOrderTestFixture = fixture.OrderTestFixture;
         }
 
         private async Task<TransportSchedule> GenerateScheduleWithStandbyStatus()
@@ -128,6 +130,20 @@ namespace Shipment.Domain.Test
             Assert.True(result);
             Assert.Equal(expectVolumeRate, schedule.VolumeLoadRate);
             Assert.Equal(expectWeightRate, schedule.WeightLoadRate);
+        }
+
+        [Fact]
+        public async Task Executing_transport_schedule_should_success()
+        {
+            LocationDescription departure = new LocationDescription(1, "武汉");
+            // this mock schedule route is 武汉 -> 上海
+            var schedule = await GenerateScheduleWithStandbyStatus();
+
+            bool result = schedule.Execute(departure);
+
+            Assert.True(result);
+            Assert.Equal(ScheduleStatus.Executed, schedule.Status);
+            Assert.Contains(schedule.DomainEvents, e => e is ScheduleExecutedDomainEvent);
         }
 
         [Fact]
@@ -247,7 +263,7 @@ namespace Shipment.Domain.Test
             PickupSchedule actualSchedule = new PickupSchedule(equipment, setoutTime, from, pickupDesc);                
 
             Assert.NotNull(actualSchedule);
-            Assert.Equal(ScheduleStatus.Created, actualSchedule.Status);
+            Assert.Equal(ScheduleStatus.Standby, actualSchedule.Status);
             Assert.Equal(equipment, actualSchedule.Equipment);
             Assert.Equal(1, actualSchedule.From.LocationId);
             Assert.Equal(pickupDesc.DetailAddress, actualSchedule.To.LocationName);
@@ -257,48 +273,41 @@ namespace Shipment.Domain.Test
         }
 
         [Fact]
-        public async Task Preparing_dispatch_schedule_will_generate_pickup()
+        public void Generate_pickup_schedule_with_invalid_pickup_information()
         {
-            var dispatching = await _scheduleRepository.GetAsync(7);
+            PickupDescription pickupDesc = new PickupDescription(
+                true,
+                EquipmentType.Vehicle,
+                "武汉市洪山区东港科技园2栋5楼",
+                "张峰", "56598952",
+                new DateTime(2022, 10, 28, 18, 0, 0),
+                "货大约5个方，需要携带起重设备");
+            var equipment = new EquipmentDescription(1, "鄂A62FD1", EquipmentType.Vehicle);
+            var setoutTime = new DateTime(2022, 10, 31, 9, 0, 0);
+            var from = new LocationDescription(1, "发网武汉仓");
 
-            //dispatching.PrepareSchedule();
-            var schedule = dispatching as PickupSchedule;
-
-            Assert.NotNull(schedule);
-            Assert.NotNull(schedule.PickupInfo.PickupCode);
+            Assert.Throws<InvalidOperationException>(() => {
+                PickupSchedule actualSchedule = new PickupSchedule(equipment, setoutTime, from, pickupDesc);
+            });
         }
 
         [Fact]
         public async Task Executing_dispatch_schedule_at_correct_setout_place_should_success()
         {
-            var schedule = await _scheduleRepository.GetAsync(9);
-            LocationDescription setoutLocation = new LocationDescription(1, "武汉网点公司");
+            var equipment = new EquipmentDescription(1, "鄂A62FD1", EquipmentType.Vehicle);
+            var setoutTime = new DateTime(2022, 11, 11, 9, 0, 0);
+            var from = new LocationDescription(1, "发网武汉仓");
 
-            bool result = schedule.Execute(setoutLocation);
+            PickupSchedule actualSchedule = new (equipment, setoutTime, from, _transportOrderTestFixture.PickupInfo);
+            bool result = actualSchedule.Execute(from);
 
             Assert.True(result);
-        }
-
-        [Fact]
-        public async Task Executing_dispatch_schedule_at_wrong_setout_place_should_failed()
-        {
-            var schedule = await _scheduleRepository.GetAsync(10);
-            LocationDescription setoutLocation = new LocationDescription(2, "错误的出发地");
-
-            bool result = schedule.Execute(setoutLocation);
-
-            Assert.False(result);
-        }
-
-        [Fact]
-        public async Task After_executing_dispatch_schedule_should_publish_scheduleexecuted_event()
-        {
-            var schedule = await _scheduleRepository.GetAsync(10);
-            LocationDescription setoutLocation = new LocationDescription(1, "武汉网点公司");
-
-            bool result = schedule.Execute(setoutLocation);
-
-            Assert.Contains(schedule.DomainEvents, e => e is ScheduleExecutedDomainEvent);
+            Assert.Equal(ScheduleStatus.Executed, actualSchedule.Status);
+            Assert.Collection(actualSchedule.DomainEvents, e => {
+                var evt = e as ScheduleExecutedDomainEvent;
+                Assert.NotNull(evt);
+                Assert.Equal(ScheduleType.Pickup, evt.Type);
+            });
         }
     }
 }
