@@ -11,6 +11,7 @@ namespace Shippment.Domain.AggregateModels.LocationAggregate
     {
         public string Code { get; private set; }
         public string Name { get; private set; }
+        public string City { get; private set; }
 
         public override string ToString()
         {

@@ -1,5 +1,12 @@
-var builder = WebApplication.CreateBuilder(args);
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Oms;
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Host.ConfigureContainer<ContainerBuilder>(b => {
+    b.RegisterModule<AutofactModule>();
+});
 // Add services to the container.
 
 builder.Services.AddControllers();

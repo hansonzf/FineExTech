@@ -2,13 +2,6 @@
 
 namespace Shippment.Domain.AggregateModels
 {
-    public enum UnitOfLength
-    {
-        Centimeter = 1,
-        Decimeter = 2,
-        Meter = 3
-    }
-
     public class Line : ValueObject
     {
         public Line(double number, UnitOfLength unit = UnitOfLength.Meter)

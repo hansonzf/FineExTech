@@ -2,13 +2,6 @@
 
 namespace Shippment.Domain.AggregateModels
 {
-    public enum UnitOfVolume
-    {
-        CubicCentimeter,
-        CubicDecimeter,
-        CubicMeter
-    }
-
     public class Cube : ValueObject
     {
         public Cube(double widthNumber, double heightNumber, double lengthNumber)
@@ -42,6 +35,35 @@ namespace Shippment.Domain.AggregateModels
 
                 return Length.Number * Width.Number * Height.Number;
             }
+        }
+
+        public double ConvertUnit(UnitOfVolume unit)
+        {
+            if (!IsValid())
+                return 0f;
+
+            switch (unit)
+            {
+                case UnitOfVolume.CubicCentimeter:
+                    Length = Length.ChangeUnit(UnitOfLength.Centimeter);
+                    Width = Width.ChangeUnit(UnitOfLength.Centimeter);
+                    Height = Height.ChangeUnit(UnitOfLength.Centimeter);
+                    break;
+                case UnitOfVolume.CubicDecimeter:
+                    Length = Length.ChangeUnit(UnitOfLength.Decimeter);
+                    Width = Width.ChangeUnit(UnitOfLength.Decimeter);
+                    Height = Height.ChangeUnit(UnitOfLength.Decimeter);
+                    break;
+                case UnitOfVolume.CubicMeter:
+                    Length = Length.ChangeUnit(UnitOfLength.Meter);
+                    Width = Width.ChangeUnit(UnitOfLength.Meter);
+                    Height = Height.ChangeUnit(UnitOfLength.Meter);
+                    break;
+                default:
+                    throw new InvalidOperationException("The unit does not supported currently!");
+            }
+
+            return Length.Number * Width.Number * Height.Number;
         }
 
         private bool IsValid()

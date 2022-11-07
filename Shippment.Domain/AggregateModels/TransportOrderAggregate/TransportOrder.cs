@@ -14,11 +14,11 @@ namespace Shippment.Domain.AggregateModels.TransportOrderAggregate
             _cargoList = new List<TransportCargo>();
         }
 
-        public TransportOrder(long customerId, DeliverySpecification gola, IEnumerable<Cargo> cargoList)
+        public TransportOrder(long customerId, DeliverySpecification goal, IEnumerable<Cargo> cargoList)
             : this()
         {
             CustomerId = customerId;
-            Goal = gola;
+            Goal = goal;
             PickupCargoInfo = PickupDescription.NoNeedPickup();
             Status = OrderStatus.Draft;
             foreach (var item in cargoList)

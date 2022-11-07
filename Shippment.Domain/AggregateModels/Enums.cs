@@ -43,4 +43,18 @@
         Completed,
         Cancelled
     }
+
+    public enum UnitOfVolume
+    {
+        CubicCentimeter,
+        CubicDecimeter,
+        CubicMeter
+    }
+
+    public enum UnitOfLength
+    {
+        Centimeter = 1,
+        Decimeter = 2,
+        Meter = 3
+    }
 }
