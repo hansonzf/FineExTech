@@ -2,10 +2,10 @@
 
 namespace Orderpool.Api.Events
 {
-    public class FinishOrderProcessingDomainEvent : INotification
+    public class OrderPulledDomainEvent : INotification
     {
         public long WatcherId { get; set; }
-        public FinishOrderProcessingDomainEvent(long watcherId)
+        public OrderPulledDomainEvent(long watcherId)
         {
             WatcherId = watcherId;
         }

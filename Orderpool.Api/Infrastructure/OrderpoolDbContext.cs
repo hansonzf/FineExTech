@@ -1,8 +1,6 @@
 ﻿using DomainBase;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Orderpool.Api.Models.OrderWatcherAggregate;
-using Orderpool.Api.Models.RemoteOrderAggregate;
 
 namespace Orderpool.Api.Infrastructure
 {
@@ -22,7 +20,6 @@ namespace Orderpool.Api.Infrastructure
             _mediator = mediator;
         }
 
-        public DbSet<OrderWatcher> OrderWatchers { get; set; }
 
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
         {
@@ -35,33 +32,6 @@ namespace Orderpool.Api.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            #region configuration OrderWatcher Entity
-            var orderWatcherBuilder = modelBuilder.Entity<OrderWatcher>();
-            orderWatcherBuilder.HasKey(x => x.Id);
-            orderWatcherBuilder.Property(x => x.Handler).IsConcurrencyToken();
-            orderWatcherBuilder.Property(x => x.OrderUuid).IsRequired();
-            orderWatcherBuilder.Property(x => x.OriginOrderPK).IsRequired();
-
-            orderWatcherBuilder.HasIndex(x => x.OrderUuid).IsUnique();
-            #endregion
-
-            #region configuration OrderProcess Entity
-            var orderProcessBuilder = modelBuilder.Entity<OrderProcess>();
-            orderProcessBuilder.HasKey(x => x.Id).IsClustered(false);
-            orderProcessBuilder.HasOne<OrderWatcher>().WithMany().HasForeignKey(x => x.WatcherId);
-            orderProcessBuilder.Property(x => x.Result).HasMaxLength(8000);
-
-            orderProcessBuilder.HasIndex(x => x.WatcherId).IsClustered(true);
-            #endregion
-
-            #region configuration RemoteOrder Entity
-            var remoteOrderBuilder = modelBuilder.Entity<RemoteOrder>();
-            remoteOrderBuilder.HasKey(x => x.Id);
-            remoteOrderBuilder.Property(x => x.ContentOfOrder).IsRequired().HasColumnType("text");
-
-            remoteOrderBuilder.HasIndex(x => x.OrderUuid).IsUnique();
-            #endregion
         }
     }
 

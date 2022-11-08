@@ -1,8 +1,8 @@
 ﻿using DomainBase;
 
-namespace Orderpool.Api.Models.OrderWatcherAggregate
+namespace Orderpool.Api.Models
 {
-    public class OrderStatus : ValueObject
+    public class Order : ValueObject
     {
         protected override IEnumerable<object> GetEqualityComponents()
         {

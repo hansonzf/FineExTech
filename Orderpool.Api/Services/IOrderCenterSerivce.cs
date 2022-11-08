@@ -1,14 +1,9 @@
-﻿using Orderpool.Api.Models.RemoteOrderAggregate;
+﻿using Orderpool.Api.Models;
 
 namespace Orderpool.Api.Services
 {
     public interface IOrderCenterSerivce
     {
-        Task<IEnumerable<RemoteOrder>> PullOrder(DateTime orderBeforeTime);
-    }
-
-    public interface IOrderCenterHttpAdapter
-    {
-        Task QueryOrders(DateTime orderBeforeTime);
+        Task<IEnumerable<Order>> PullOrder(DateTime orderBeforeTime);
     }
 }
