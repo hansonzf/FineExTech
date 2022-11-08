@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Oms.Controllers
 {
@@ -6,6 +7,10 @@ namespace Oms.Controllers
     [Route("[controller]")]
     public class OrderpoolController : ControllerBase
     {
-        
+        public IActionResult Index()
+        {
+            
+            return Ok();
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace Shippment.Domain.AggregateModels.LocationAggregate
         {
             yield return LocationId;
             yield return LocationName;
+            yield return City;
         }
     }
 }
