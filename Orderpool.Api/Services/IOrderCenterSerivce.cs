@@ -4,6 +4,6 @@ namespace Orderpool.Api.Services
 {
     public interface IOrderCenterSerivce
     {
-        Task<IEnumerable<Order>> PullOrder(DateTime orderBeforeTime);
+        Task<IEnumerable<OrderDigest>> PullOrder(DateTime orderBeforeTime);
     }
 }

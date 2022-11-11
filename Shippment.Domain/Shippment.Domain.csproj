@@ -18,4 +18,8 @@
     <ProjectReference Include="..\DomainBase\DomainBase.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CollaborateServices\" />
+  </ItemGroup>
+
 </Project>

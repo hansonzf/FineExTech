@@ -12,7 +12,7 @@ namespace Orderpool.Api.Application.CollaborateServices.OrderCenter
             _adapter = adapter;
         }
 
-        public async Task<IEnumerable<Order>> PullOrder(DateTime orderBeforeTime)
+        public async Task<IEnumerable<OrderDigest>> PullOrder(DateTime orderBeforeTime)
         {
             throw new NotImplementedException();
         }

@@ -4,6 +4,7 @@ using Orderpool.Api.Application.CollaborateServices.OrderCenter;
 using Orderpool.Api.Infrastructure;
 using Orderpool.Api.Models;
 using Orderpool.Api.Services;
+using Quartz;
 using System.Net.NetworkInformation;
 using System.Reflection;
 
@@ -13,6 +14,13 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 
 builder.Services.AddDbContext<OrderpoolDbContext>(options => {
     options.UseSqlServer(connectionString);
+});
+
+builder.Services.AddQuartz(q => {
+    q.UseMicrosoftDependencyInjectionScopedJobFactory();
+});
+builder.Services.AddQuartzServer(options => {
+    options.WaitForJobsToComplete = true;
 });
 
 Assembly[] assemblies = new Assembly[1]
