@@ -1,6 +1,11 @@
-var builder = WebApplication.CreateBuilder(args);
+using LocationApi.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+string defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<LocationDbContext>(options => {
+    options.UseSqlServer(defaultConnection);
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

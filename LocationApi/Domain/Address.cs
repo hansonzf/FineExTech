@@ -7,21 +7,29 @@ namespace LocationApi.Domain
         public string Country { get; private set; }
         public string Province { get; private set; }
         public string City { get; private set; }
-        public string Street { get; private set;  }
+        public string District { get; private set;  }
         public string PostalCode { get; private set; }
         public string DetailAddress { get; private set;  }
 
         private Address()
         { }
 
-        public Address(string country, string province, string city, string street, string postalCode, string detail)
+        public Address(string country, string province, string city, string district, string postalCode, string detail)
         {
             Country = country;
             Province = province;
             City = city;
-            Street = street;
+            District = district;
             PostalCode = postalCode;
             DetailAddress = detail;
+        }
+
+        public bool IsVaild()
+        {
+            bool result = true;
+            result &= Country != null && Province != null && City != null && DetailAddress != null;
+
+            return result;
         }
 
         public static Address Null()
@@ -31,7 +39,7 @@ namespace LocationApi.Domain
                 Country = default,
                 Province = default,
                 City = default,
-                Street = default,
+                District = default,
                 PostalCode = default,
                 DetailAddress = default
             };
@@ -44,7 +52,7 @@ namespace LocationApi.Domain
             yield return Country;
             yield return Province;
             yield return City;
-            yield return Street;
+            yield return District;
             yield return PostalCode;
             yield return DetailAddress;
         }

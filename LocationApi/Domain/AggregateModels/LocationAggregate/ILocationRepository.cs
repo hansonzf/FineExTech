@@ -7,5 +7,6 @@ namespace LocationApi.Domain.AggregateModels.LocationAggregate
         Task<Location> GetAsync(long locationId);
         Task<IEnumerable<Location>> GetByOwnerAsync(long ownerId, int pageIndex = 1, int pageSize = 20);
         Task<long> CreateAsync(Location location);
+        Task<bool> DeleteAsync(long locationId);
     }
 }

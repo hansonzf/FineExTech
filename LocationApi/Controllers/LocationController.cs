@@ -72,5 +72,49 @@ namespace LocationApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        // POST api/locations/1/address
+        [HttpPost("{locationId}/address")]
+        public async Task<IActionResult> UpdateLocationAddress(long locationId, [FromBody] AddressValue address)
+        {
+            var addr = new Address(
+                address.Country, 
+                address.Province, 
+                address.City, 
+                address.Street, 
+                address.PostalCode, 
+                address.DetailAddress);
+            var location = await _repository.GetAsync(locationId);
+
+            if (!addr.IsVaild())
+                return BadRequest();
+
+            location.UpdateAddress(addr);
+            try
+            {
+                bool result = await _repository.UnitOfWork.SaveEntitiesAsync();
+                if (result)
+                    return Ok();
+                else
+                    return StatusCode(500);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpDelete("{locationId}")]
+        public async Task<IActionResult> DeleteLocation(long locationId)
+        {
+            if (locationId <= 0)
+                return BadRequest("Parameter locationId must large than 0!");
+
+            bool result = await _repository.DeleteAsync(locationId);
+            if (result)
+                return Ok();
+            else
+                return NoContent();
+        }
     }
 }

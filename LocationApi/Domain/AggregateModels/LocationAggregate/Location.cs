@@ -17,7 +17,13 @@ namespace LocationApi.Domain.AggregateModels.LocationAggregate
             Owner = owner;
             Code = code;
             Name = name;
-            Addr = addr;
+            Addr = addr.IsVaild() ? addr : Address.Null();
+        }
+
+        public void UpdateAddress(Address address)
+        {
+            if (address.IsVaild())
+                Addr = address;
         }
 
         public override string ToString()
