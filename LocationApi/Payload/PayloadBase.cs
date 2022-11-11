@@ -1,4 +1,4 @@
-﻿namespace LocationApi.Models.Payload
+﻿namespace LocationApi.Payload
 {
     public abstract class PayloadBase
     {

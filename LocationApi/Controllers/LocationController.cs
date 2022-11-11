@@ -1,7 +1,6 @@
 using LocationApi.Domain;
 using LocationApi.Domain.AggregateModels.LocationAggregate;
-using LocationApi.Infrastructure;
-using LocationApi.Models.Payload;
+using LocationApi.Payload;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LocationApi.Controllers
@@ -35,14 +34,22 @@ namespace LocationApi.Controllers
 
         // GET api/locations/ownedby/1
         [HttpGet("ownedby/{owner}")]
-        public async Task<ActionResult<PagedResponsePayload<Location>>> GetLocations(long ownerId, int pageIndex = 1, int pageSize = 20)
+        public async Task<ActionResult<PaginatedItemsPayload<Location>>> GetLocations(long ownerId, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 20)
         {
             if (ownerId <= 0)
                 return BadRequest("Parameter ownerId must large than 0!");
 
             var locations = await _repository.GetByOwnerAsync(ownerId, pageIndex, pageSize);
+            var paylaod = new PaginatedItemsPayload<Location>
+            { 
+                Data = locations,
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Result = true,
+                Message = string.Empty
+            };
             if (locations.Any())
-                return Ok(locations);
+                return Ok(paylaod);
             else
                 return NoContent();
         }

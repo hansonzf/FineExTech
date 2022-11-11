@@ -25,7 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Infrastructure\" />
     <Folder Include="IntegrationEvents\" />
+    <Folder Include="Models\" />
     <Folder Include="Validators\" />
   </ItemGroup>
 

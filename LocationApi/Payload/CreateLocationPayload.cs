@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace LocationApi.Models.Payload
+namespace LocationApi.Payload
 {
     public class CreateLocationPayload : PayloadBase
     {

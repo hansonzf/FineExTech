@@ -6,7 +6,7 @@ using Orderpool.Api.Models.OrderWatcherAggregate;
 namespace Orderpool.Api.Controllers
 {
     [ApiController]
-    [Route("orders")]
+    [Route("api/orders")]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderWatchRepository _repository;

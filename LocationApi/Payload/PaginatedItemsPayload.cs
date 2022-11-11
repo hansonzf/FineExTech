@@ -1,6 +1,6 @@
-﻿namespace LocationApi.Infrastructure
+﻿namespace LocationApi.Payload
 {
-    public class PagedResponsePayload<T>
+    public class PaginatedItemsPayload<T>
         where T : class
     {
         public bool Result { get; set; }
